@@ -1,0 +1,39 @@
+{
+  "name": "talan-tln-nodejs",
+  "version": "19.2.0",
+  "description": "talan-tln-nodejs",
+  "license": "MIT",
+  "author": "Vladyslav Kurmaz <vladislav.kurmaz@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/project-talan/tln-nodejs.git"
+  },
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "serve": "NODE_ENV=development nodemon --watch src --watch spec",
+    "jasmine-init": "./node_modules/jasmine/bin/jasmine.js init",
+    "jasmine": "./node_modules/jasmine/bin/jasmine.js",
+    "karma-init": "karma init",
+    "karma": "karma start"
+  },
+  "dependencies": {
+    "ajv": "6.7.0",
+    "cors": "2.8.5",
+    "csurf": "1.9.0",
+    "dotenv": "6.2.0",
+    "express": "4.16.4",
+    "express-session": "1.15.6",
+    "helmet": "3.15.0",
+    "randomstring": "1.1.5",
+    "request": "2.88.0",
+    "session-file-store": "1.2.0",
+    "simple-stats-server": "0.0.5"
+  },
+  "devDependencies": {
+    "jasmine": "3.3.1",
+    "jasmine-core": "3.3.0",
+    "nodemon": "1.18.9",
+    "requirejs": "2.3.6"
+  }
+}
