@@ -1,0 +1,7 @@
+[
+  {
+    "prefix": "services/auth",
+    "origin": "https://github.com/project-talan/tln-nodejs.git",
+    "branch": "master"
+  }
+]
