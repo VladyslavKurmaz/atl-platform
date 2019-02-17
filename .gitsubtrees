@@ -3,5 +3,10 @@
     "prefix": "services/auth",
     "origin": "https://github.com/project-talan/tln-nodejs.git",
     "branch": "master"
+  },
+  {
+    "prefix": "services/api",
+    "origin": "https://github.com/project-talan/tln-nodejs.git",
+    "branch": "master"
   }
 ]
