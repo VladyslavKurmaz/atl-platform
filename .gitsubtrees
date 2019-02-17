@@ -8,5 +8,10 @@
     "prefix": "services/api",
     "origin": "https://github.com/project-talan/tln-nodejs.git",
     "branch": "master"
+  },
+  {
+    "prefix": "static/html",
+    "origin": "https://github.com/project-talan/tln-angular.git",
+    "branch": "master"
   }
 ]
