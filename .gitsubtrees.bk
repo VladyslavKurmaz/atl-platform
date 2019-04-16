@@ -2,66 +2,66 @@
   {
     'prefix': 'static/html',
     'origin': 'https://github.com/project-talan/tln-angular.git',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'services/auth',
     'origin': 'https://github.com/project-talan/tln-nodejs.git',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'services/api',
     'origin': 'https://github.com/project-talan/tln-nodejs.git',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'services/scraper',
     'origin': 'https://github.com/project-talan/tln-nodejs.git',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'services/tags',
     'origin': 'https://github.com/project-talan/tln-nodejs.git',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'services/lb',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'services/msgb',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'dbs/objects',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'dbs/relations',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'dbs/tags',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'dbs/docs',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'mobile/android',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   },
   {
     'prefix': 'mobile/ios',
     'origin': '',
-    'branch': 'master'
+    'ref': 'master'
   }
 ]
