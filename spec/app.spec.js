@@ -1,19 +1,17 @@
 var req = require("request");
 
 describe("Appl", () => {
-  var context;
+  let server;
   beforeAll(() => {
-    context = require("../src/server")();
+    server = require('./../src/server').run4tests();
   });
   afterAll(() => {
-    context.server.close();
+    server.stop();
   });
   describe("GET /healthcheck", () => {
     var data = {};
     beforeAll((done) => {
-      const h = 'localhost'; //context.params.host;
-      const p = context.params.port;
-      req.get(`http://${h}:${p}/healthcheck`, (error, response, body) => {
+      req.get(server.params.buildEndpoint(['healthcheck']), (error, response, body) => {
         data.status = response.statusCode;
         data.body = JSON.parse(body);
         done();
