@@ -1,11 +1,20 @@
-def configBuildEnv(be) {
+def configBuildEnv(configFile) {
   def tools = [
     'openjdk': ['envs':['JAVA_HOME'], 'paths':['/bin'], 'validate':'java -version'],
     'nodejs': ['envs':['NODEJS_HOME'], 'paths':['/bin'], 'validate':'node -v'],
     'maven': ['envs':['MAVEN_HOME', 'M2_HOME'], 'paths':['/bin'], 'validate':'mvn -v']
   ]
-  print(be)
-  be.each { prop, val -> 
+  def config = [:]
+  if (fileExists(configFile)) {
+    print("Use Configuration from ${configFile}")
+    config = readJSON file: configFile
+  }else{
+    print('Default VM setup will be used')
+  }
+  printTopic('Build environment config')
+  print(config)
+  // configure
+  config.each { prop, val -> 
     if (tools[prop]) {
       sh "echo Configurint ${prop} using ${val} version"
       def t = tool "${val}"
@@ -53,21 +62,8 @@ node {
     println(params)
     printTopic('SCM variables')
     println(scmVars)
-
-    // Setup build environment
-    def configFile = 'buildenv.conf'
-    // sh "echo '{\"openjdk\":\"openjdk-11.0.2\", \"nodejs\":\"nodejs-10.7.0\", \"maven\":\"maven-3.6.0\"}' > ${configFile}"
-    // sh "rm -f '${configFile}'"
-    def config = [:]
-    if (fileExists(configFile)) {
-      print("Use Configuration from ${configFile}")
-      config = readJSON file: configFile
-    }else{
-      print('Default VM setup will be used')
-    }
-    printTopic('Build environment config')
-    print(config)
-    configBuildEnv(config) 
+    // configure build env
+    configBuildEnv('build.conf.json');
     //
     commitSha = scmVars.GIT_COMMIT
     buildBranch = scmVars.GIT_BRANCH
@@ -101,14 +97,17 @@ node {
     printTopic('Author(s)')
     echo "[lastCommitAuthorEmail:${lastCommitAuthorEmail}]"
   }
-  stage('build') {
+  stage('Init') {
+    sh './init.sh';
+  }
+  stage('Build') {
     sh './build.sh';
   }
-  stage('test') {
+  stage('Unit test') {
     sh './test.sh';
   }
-  stage('delivery') {
+  stage('Delivery') {
   }
-  stage('deploy') {
+  stage('Deploy') {
   }
 }
