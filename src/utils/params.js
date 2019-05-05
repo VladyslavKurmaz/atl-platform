@@ -8,13 +8,20 @@ class Params {
   }
 
   // load parameters from environment variables or use default values
-  load(variables) {
+  load(variables, env) {
     Object.keys(variables).map((k, i) => {
-      const v = process.env[variables[k].env];
+      let v = process.env[variables[k].env];
+      if (env[k]) {
+        v = env[k];
+      }
       if (v != 'undefined' && v){
-        this[k] = v;
+        if (variables[k].delim) {
+          this.set(k, v.split(variables[k].delim));
+        } else {
+          this.set(k, v);
+        }
       } else {
-        this[k] = variables[k].def;
+        this.set(k, variables[k].def);
       }
     });
   }
@@ -25,9 +32,8 @@ class Params {
   }
 
   //
-  buildEndpoint(path, query = null, hash = null) {
-    // TODO use buildEndpointEx insead
-    return `http://${this.host}:${this.port}${path}`;
+  buildEndpoint(paths, query = null, hash = null) {
+    return this. buildEndpointEx(this.host, this.port, paths, query, hash);
   }
 
   //
@@ -38,16 +44,15 @@ class Params {
     return r.join('/');
   }
   //
-  dump(cout) {
-    cout.log(`Component [${this.key}]`);
-    cout.log('Environment:');
+  dump(logger) {
+    logger.info('Parameters:');
     for(var n in this) {
       if (typeof this[n] !== "function") {
-        console.log(`* ${n}: ${this[n]}`);
+        logger.info(`* ${n}: `, this[n]);
       }
     }
   }
-};
+}
 
 module.exports.create = () => {
   return new Params();

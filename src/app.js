@@ -1,4 +1,4 @@
 'use strict';
 
 // server
-const context = require('./server')();
+const server = require('./server').run(require('./utils/logger').create(3), {});
