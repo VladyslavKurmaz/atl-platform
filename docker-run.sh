@@ -1,5 +1,5 @@
 #!/bin/bash -e
-if [ -f .env ]; then export $(cat .env | grep -v ^# | xargs); fi
+if [ -f ".env" ]; then export $(envsubst < ".env" | grep -v ^# | xargs); fi
 docker run -d --rm \
   --env-file .env \
  -p $COMPONENT_PARAM_PORT:$COMPONENT_PARAM_PORT \
