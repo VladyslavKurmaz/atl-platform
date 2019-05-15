@@ -7,6 +7,7 @@ class Server {
   */
   constructor(logger) {
     this.logger = logger;
+    this.dotenv = require('dotenv').config();
     this.express = require('express')
     this.app = this.express();
     this.http = require('http');
@@ -18,7 +19,6 @@ class Server {
     this.jsv = require('./utils/jsv').create(this.logger, { allErrors:true, removeAdditional:'all' });
     this.reply = require('./utils/reply').create();
     //
-    this.dotenv = require('dotenv').config();
     this.stats = require('simple-stats-server')();
   }
 
