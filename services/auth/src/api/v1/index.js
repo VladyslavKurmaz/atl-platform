@@ -1,4 +1,5 @@
 'use strict';
+/*
 const { ApiInfo, BaseApi } = require("./..");
 
 class ApiV1 extends BaseApi{
@@ -22,3 +23,4 @@ class ApiV1 extends BaseApi{
 module.exports.create = (context, version, base) => {
   return new ApiV1(context, version, base);
 }
+*/
