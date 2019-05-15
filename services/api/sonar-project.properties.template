@@ -1,0 +1,14 @@
+#sonar.host.url=${SONARQUBE_HOST}
+#sonar.login=${SONARQUBE_ACCESS_TOKEN}
+
+sonar.projectKey=${COMPONENT_ID}
+sonar.projectName=${COMPONENT_ID}
+sonar.projectVersion=${COMPONENT_VERSION}
+sonar.sourceEncoding=UTF-8
+sonar.language=js
+sonar.sources=src
+sonar.exclusions=**/node_modules/**,**/*.spec.ts
+sonar.tests=spec
+sonar.test.inclusions=**/*.spec.ts
+
+sonar.javascript.lcov.reportPaths=coverage/lcov.info

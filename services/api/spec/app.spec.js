@@ -1,4 +1,6 @@
-var req = require("request");
+'use strict';
+
+const req = require("request");
 
 describe("Appl", () => {
   let server;
