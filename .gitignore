@@ -60,3 +60,4 @@ typings/
 # template specific items
 sonar-project.properties
 sessions
+coverage
