@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 class ApiInfo {
   constructor(version, base, ref, depricated, startDate, endDate) {
     this.version = version;
@@ -37,3 +37,4 @@ module.exports = {
   ApiInfo,
   BaseApi
 }
+*/
