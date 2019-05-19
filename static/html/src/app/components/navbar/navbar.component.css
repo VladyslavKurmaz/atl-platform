@@ -1,0 +1,13 @@
+.navbar__logo {
+  width: 32px;
+  height: 32px;
+}
+.navbar__logo-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.navbar__icon {
+  width: 32px;
+  height: 32px;
+}

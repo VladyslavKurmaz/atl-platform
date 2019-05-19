@@ -5,6 +5,8 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { catchError, map, retry } from 'rxjs/operators';
 import { of } from 'rxjs';
 
+import { TenantsService } from '../../services/tenants.service';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -19,7 +21,7 @@ export class HomeComponent implements OnInit {
   response = '';
   success = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private tenantsService: TenantsService) { }
 
   ngOnInit() {
   }
