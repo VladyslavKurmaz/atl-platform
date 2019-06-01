@@ -1,3 +1,15 @@
-<p>
-  bind works!
-</p>
+<div class="container-fluid bg-light">
+  <div class="row bind__container-row">
+    <div class="offset-1 col-10 offset-sm-2 col-sm-8 offset-md-3 col-md-6 offset-lg-4 col-lg-4 bg-light border-left border-right p-0">
+      <a routerLink="/home">
+        <div class="text-center p-2 mb-4">
+          <img class="img-fluid bind__comminity-logo" src="assets/imgs/community.png">
+        </div>
+      </a>
+      <app-providers></app-providers>
+      <p class="lead text-center fixed-bottom">
+        <a class="btn btn-link" routerLink='/' role="button">back</a>
+      </p>
+    </div>
+  </div>
+</div>

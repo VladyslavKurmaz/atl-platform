@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit {
   ];
   
   isTenant = false;
-  companyName = "";
+  companyName = '';
   styles: any = {};
   subsTenant: Subscription;
 
@@ -42,7 +42,7 @@ export class NavbarComponent implements OnInit {
   }
   ngOnDestroy() {
     if (this.subsTenant) {
-      this.subsTenant.unsubscribe()
+      this.subsTenant.unsubscribe();
     }
   }
 

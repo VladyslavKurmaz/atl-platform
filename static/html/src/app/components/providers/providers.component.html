@@ -1,0 +1,50 @@
+<div class="container px-0">
+  <div class="px-4 py-2" *ngFor="let server of authServers; let s = index">
+    <div class="row mb-2 border-bottom">
+      <div class="col-12">
+        <div class="d-inline float-left h4 text-info">{{server.name}}</div>
+        <a *ngIf="!server.isEditMode()" (click)="server.setEditMode(true)" class="btn btn-link d-inline float-right p-0"><img class="img-fluid server__edit-icon" src="assets/imgs/icons/edit.png"></a>
+        <a *ngIf="server.isEditMode()" (click)="server.setEditMode(false)" class="btn btn-link d-inline float-right p-0"><img class="img-fluid server__edit-icon" src="assets/imgs/icons/cancel.png"></a>
+      </div>
+    </div>
+    <div class="row" *ngIf="server.isEditMode()">
+      <div class="col-12 font-weight-bold">
+        <form>
+          <div class="row">
+            <div class="col-4 px-1">
+              <input type="text" class="form-control" placeholder="Alias" value="{{server.name}}">
+            </div>
+            <div class="col-8 px-1">
+              <input type="text" class="form-control" placeholder="Authentication host url" value="{{server.host}}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="offset-7 col-2 text-right">
+              <button type="button" class="btn btn-link text-success btn-sm">apply</button>
+            </div>
+            <div class="col-2 text-left">
+              <button type="button" class="btn btn-link text-danger btn-sm">delete</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row" *ngIf="!server.isEditMode()">
+      <div class="col-12 text-center">
+        <app-loading *ngIf="server.loading"></app-loading>
+        <app-error *ngIf="server.error" [errorMessage]="server.error" [retryText]="'Retry'" [retryParam]="server" (retryEvent)="updateAuthServer($event)"></app-error>
+      </div>
+    </div>
+    <div class="row px-2 px-5-md" *ngIf="!(server.loading || server.error) && (server.providers.length > 0) && !server.isEditMode()">
+      <div class="col-3 text-center p-0"  *ngFor="let provider of server.providers; let i = index">
+        <div class="">
+          <a class="" href="{{provider.authLink}}">
+            <img  class="container__provider-icon" [attr.src]="getProviderIcon(provider)">
+          </a>
+        </div>
+        <div [ngClass]="{'bg-info border border-light': provider.active, 'bg-transparent': !provider.active}"  class="container__provider-circle"></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<div class="container-fluid">
+  <div class="row text-center">
+    <div class="col-12 p-4">
+      <img class="img-fluid error__icon"  src="assets/imgs/error.gif">
+    </div>
+    <div class="col-12 text-danger">
+      {{errorMessage}}{{text}}
+    </div>
+    <div class="col-12 p-3">
+      <button type="button" class="btn btn-dark" (click)='retry()'>{{retryText}}</button>
+    </div>
+  </div>
+</div>

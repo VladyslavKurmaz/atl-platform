@@ -1,0 +1,18 @@
+.container__provider-icon {
+  width: 64px;
+}
+
+.container__provider-circle {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  border-width: 2px !important;
+  width: 16px;
+  height: 16px;
+  left: -22px;
+  top: -64px;
+}
+
+.server__edit-icon {
+  width: 24px;
+}

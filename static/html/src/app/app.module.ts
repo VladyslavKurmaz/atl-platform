@@ -19,6 +19,9 @@ import { GoalsComponent } from './pages/goals/goals.component';
 import { FlowsComponent } from './pages/flows/flows.component';
 import { DocsComponent } from './pages/docs/docs.component';
 import { BindComponent } from './pages/bind/bind.component';
+import { ProvidersComponent } from './components/providers/providers.component';
+import { ErrorComponent } from './components/error/error.component';
+import { LoadingComponent } from './components/loading/loading.component';
 
 
 @NgModule({
@@ -34,7 +37,10 @@ import { BindComponent } from './pages/bind/bind.component';
     GoalsComponent,
     FlowsComponent,
     DocsComponent,
-    BindComponent
+    BindComponent,
+    ProvidersComponent,
+    ErrorComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

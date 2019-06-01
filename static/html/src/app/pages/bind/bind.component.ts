@@ -12,4 +12,7 @@ export class BindComponent implements OnInit {
   ngOnInit() {
   }
 
+  isAuthenticated() {
+    return true;
+  }
 }
