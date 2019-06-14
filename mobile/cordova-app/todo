@@ -1,0 +1,1 @@
+remove android:usesCleartextTraffic="true" from config.xml to use pure https
