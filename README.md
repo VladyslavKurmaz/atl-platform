@@ -16,6 +16,10 @@ git subtree pull --prefix mobile/cordova-app tln-cordova master --squash
 
 ### or Fork/clone repository
 
+### Create new project
+* run ```tln prereq```, update .env file with your local dev env parameters
+* run ```tln create-app```, update config.xml and package.json with project's actual values
+
 To develop standalone project, just clone repository or create fork using your account
 
 ## SDLC
