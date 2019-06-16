@@ -103,13 +103,14 @@ node {
   }
 
   stage('Build') {
-    sh './prereq@sdlc.sh'
-    sh './init@nodejs.sh'
-    sh './build@nodejs.sh'
+    sh 'npm i tln-cli -g'
+    sh 'tln prereq'
+    sh 'tln init'
+    sh 'tln build'
   }
   //
   stage('Unit tests') {
-    sh './test@nodejs.sh'
+    sh 'tln test'
   }
   //
   stage('SonarQube analysis') {
