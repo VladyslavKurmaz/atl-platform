@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.attlas.mobile.client" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>@tlas</name>
+<widget id="io.attlas.mobile.client" version="19.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>@atlas</name>
     <description>
-        @tlas single-point communication application
+      @atlas projects
     </description>
     <author email="vladislav.kurmaz@gmail.com" href="https://attlas.io">
         Vladyslav Kurmaz
@@ -23,6 +23,5 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <engine name="browser" spec="^6.0.0" />
-    <engine name="android" spec="^8.0.0" />
+    <engine name="android" spec="^7.1.4" />
 </widget>

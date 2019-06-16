@@ -13,5 +13,10 @@
     "prefix": "static/html",
     "origin": "https://github.com/project-talan/tln-angular.git",
     "ref": "master"
+  },
+  {
+    "prefix": "mobile/cordova-app",
+    "origin": "https://github.com/project-talan/tln-cordova.git",
+    "ref": "master"
   }
 ]

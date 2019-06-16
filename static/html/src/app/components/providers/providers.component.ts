@@ -12,6 +12,7 @@ export class ProvidersComponent implements OnInit {
 
   authServers: AuthServer[] = [
     new AuthServer('@tlas', 'http://46.101.7.84:9082/api/v1')
+//    new AuthServer('@tlas', 'http://127.0.0.1:9082/api/v1')
   ];
 
   constructor(private authService: AuthService) { }
