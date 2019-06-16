@@ -103,13 +103,13 @@ node {
   }
 
   stage('Build') {
-    sh './prereq.sh'
-    sh './init.sh'
-    sh './build.sh'
+    sh './prereq@sdlc.sh'
+    sh './init@nodejs.sh'
+    sh './build@nodejs.sh'
   }
   //
   stage('Unit tests') {
-    sh './test.sh'
+    sh './test@nodejs.sh'
   }
   //
   stage('SonarQube analysis') {
