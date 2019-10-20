@@ -8,7 +8,9 @@ class Server {
   constructor(logger) {
     this.logger = logger;
     this.dotenv = require('dotenv').config();
-    this.express = require('express')
+    this.fs = require('fs');
+    this.path = require('path');
+    this.express = require('express');
     this.app = this.express();
     this.http = require('http');
     this.httpServer = null;
@@ -153,7 +155,24 @@ class Server {
       );
 
     //--------------------------------------------------------------------------
-    // TODO: load available APIs
+    // load available APIs
+    let apis = [];
+    this.logger.trace('Loading available APIs:');
+    const apiLocation = './src/api';
+    this.fs.readdirSync(apiLocation).forEach(file => {
+      const path2api = this.path.join(apiLocation, file);
+      if(this.fs.lstatSync(path2api).isDirectory()) {
+        this.logger.trace(`* load:  ${file}`, __dirname);
+        //const api = require('src/api/v1').create(this, file, ['api', file]).configure();
+        const api = require(['.', 'api', file].join('/')).create(this, file, ['api', file]);
+        apis.push(api.getInfo());
+        api.configure();
+      }
+    });
+    this.app.route('/api')
+    .get( (req, res) => {
+      return res.json(this.reply.success(apis));
+    });
 
     return true;
   }
@@ -214,15 +233,6 @@ module.exports = function(){
   //
   context.configure();
 
-  // load available APIs
-  console.log('Loading available APIs:');
-  const apiLocation = './src/api';
-  fs.readdirSync(apiLocation).forEach(file => {
-    if(fs.lstatSync(path.join(apiLocation, file)).isDirectory()) {
-      console.log(`* ${file}`);
-      require(`./api/${file}`).create(context, file, ['', 'api', file].join('/')).configure();
-    }
-  })
   
   // run server
   context.run();
