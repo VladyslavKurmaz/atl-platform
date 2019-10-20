@@ -1,17 +1,16 @@
 'use strict';
 
-class ApiInfo {
-  constructor(version, base, ref, depricated, startDate, endDate) {
+class apiInfo {
+  constructor(version, base, ref, startDate, endDate) {
     this.version = version;
     this.base = base;
     this.ref = ref;
-    this.depricated = depricated;
     this.startDate = startDate;
     this.endDate = endDate;
   }
 }
 
-class BaseApi {
+class baseApi {
 
   constructor(server, info) {
     this.server = server;
@@ -38,6 +37,6 @@ class BaseApi {
 }
 
 module.exports = {
-  ApiInfo,
-  BaseApi
+  apiInfo,
+  baseApi
 }
