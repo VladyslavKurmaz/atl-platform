@@ -1,11 +1,11 @@
 'use strict';
-/*
-const { ApiInfo, BaseApi } = require("./..");
 
-class ApiV1 extends BaseApi{
+const { apiInfo, baseApi } = require("./..");
 
-  constructor(context, version, base) {
-    super(context, new ApiInfo(version, base, context.params.buildEndpoint(base), false, '2019-02-04', null));
+class apiV1 extends baseApi{
+
+  constructor(server, version, base) {
+    super(server, new apiInfo(version, base.join('/'), server.params.buildEndpoint(base), '2019-09-01', null));
   }
 
   configure() {
@@ -20,7 +20,6 @@ class ApiV1 extends BaseApi{
 
 }
 
-module.exports.create = (context, version, base) => {
-  return new ApiV1(context, version, base);
+module.exports.create = (server, version, base) => {
+  return new apiV1(server, version, base);
 }
-*/
