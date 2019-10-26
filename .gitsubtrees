@@ -18,5 +18,10 @@
     "prefix": "mobile/cordova-app",
     "origin": "https://github.com/project-talan/tln-cordova.git",
     "ref": "master"
+  },
+  {
+    "prefix": "services/scraper/worker",
+    "origin": "git@github.com:project-talan/tln-nodejs.git",
+    "ref": "master"
   }
 ]
