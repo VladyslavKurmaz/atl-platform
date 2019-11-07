@@ -9,7 +9,7 @@ class Params {
 
   // load parameters from environment variables or use default values
   load(variables, env) {
-    Object.keys(variables).map((k, i) => {
+    Object.keys(variables).forEach((k) => {
       let v = process.env[variables[k].env];
       if (env[k]) {
         v = env[k];
