@@ -15,9 +15,67 @@ class actor01 extends baseActor {
     super(config, db);
   }
 
+  async doRequest(url) {
+    return new Promise( (resolve, reject) => {
+      request(url, function (err, res, body) {
+        if (!err && res.statusCode == 200) {
+          resolve(body);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  }
+
   async execute() {
-    for(const kw of shuffle(keywords)) {
-      console.log(kw);
+    for(const kw of shuffle(keywords.slice(2,3))) {
+      console.log('1 - start', kw);
+      //
+      await this.doRequest(`https://ssssjobs.dou.ua/vacancies/?category=${kw}`).
+      then((data) => {
+        // get search results
+        let items = [];
+        let $ = cheerio.load(data);
+        $(".l-vacancy").each(function(i, e) {
+          const title = $(this).find('.title > a').text();
+          const href = $(this).find('.title > a').attr().href;
+          const source = url.parse(href);
+          source.search= '';
+          items.push(url.format(source));
+        });
+        // scan vacancies
+        for(const e of items) {
+          console.log('2 - start', e);
+          request(e, async (err, resp, data) => {
+            if (!err) {
+              $ = cheerio.load(data);
+              const vnode = $('.b-vacancy');
+              const companyUrl = $(vnode).find('.b-compinfo a').attr().href;
+              const dateStr = $(vnode).find('.date').text();
+              const m = moment(dateStr, 'DD MMMM YYYY', 'ru');
+              const vacancy = {
+                url: e,
+                company: {
+                  id: url.parse(companyUrl).pathname.split('/')[2],
+                  url: companyUrl
+                },
+                date: m.format('YYYY-MM-DD'),
+                location: $(vnode).find('.l-vacancy .place').text().trim(),
+                salary:  $(vnode).find('.l-vacancy .salary').text().trim(),
+                title: $(vnode).find('.g-h2').text(),
+                text:  $(vnode).find('.l-vacancy .vacancy-section').text()
+              }
+              console.log(vacancy);
+            }
+          });
+          console.log('2 - end', e);
+          break;
+        }
+      }).
+      catch( e => {
+        console.log(e);
+      });
+      console.log('1 - end', kw);
     }
   }
 
@@ -92,47 +150,5 @@ request('https://jobs.dou.ua/vacancies/feeds/?category=java', (err, resp, body) 
 });
 /*/
 /*/
-request("https://jobs.dou.ua/vacancies/?category=java", (err, resp, data) => {
-  if (!err) {
-    // get search results
-    let items = [];
-    let $ = cheerio.load(data);
-    $(".l-vacancy").each(function(i, e) {
-      const title = $(this).find('.title > a').text();
-      const href = $(this).find('.title > a').attr().href;
-      const source = url.parse(href);
-      source.search= '';
-      items.push(url.format(source));
-    });
-    // scan vacancies
-    items.some((e, i) => {
-      request(e, (err, resp, data) => {
-        if (!err) {
-          $ = cheerio.load(data);
-          const vnode = $('.b-vacancy');
-          const companyUrl = $(vnode).find('.b-compinfo a').attr().href;
-          const dateStr = $(vnode).find('.date').text();
-          const m = moment(dateStr, 'DD MMMM YYYY', 'ru');
-          const vacancy = {
-            url: e,
-            company: {
-              id: url.parse(companyUrl).pathname.split('/')[2],
-              url: companyUrl
-            },
-            date: m.format('YYYY-MM-DD'),
-            location: $(vnode).find('.l-vacancy .place').text().trim(),
-            salary:  $(vnode).find('.l-vacancy .salary').text().trim(),
-            title: $(vnode).find('.g-h2').text(),
-            text:  $(vnode).find('.l-vacancy .vacancy-section').text()
-          }
-          console.log(vacancy);
-        }
-      });
-      return true;
-    });
-  } else {
-    console.log(err);
-  }
-});
 /*/
 

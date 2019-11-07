@@ -3,7 +3,7 @@
 // read config
 const config = {
   actor01: {
-    middle: 1000,
+    middle: 100000,
     deviation: 10
   },
   actor02: {
