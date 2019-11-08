@@ -1,18 +1,14 @@
 'use strict';
 
+const utils = require('./utils');
+
 class service {
 
-  constructor(name) {
-    console.log(` * service ${name} started ` + (new Date()).toString());
+  constructor(logger, name) {
+    this.logger = logger;
     this.name = name;
     this.timers = [];
-  }
-
-  getTimeout(middle, deviation) {
-    const delta = middle * deviation / 100;
-    const mi = Math.ceil(middle - delta);
-    const ma = Math.floor(middle + delta);
-    return Math.floor(Math.random() * (ma - mi + 1)) + mi;
+    this.logger.info(`Service ${this.name} started ` + utils.getCurDateTimeStr());
   }
 
   init() {
@@ -20,9 +16,10 @@ class service {
   }
 
   async tick(scraper, i) {
+    this.logger.info(` * service ${this.name} waked up at ` + utils.getCurDateTimeStr());
     await scraper.execute();
-    const tm = this.getTimeout(scraper.middle, scraper.deviation);
-    console.log(`#${i} sleep for ${tm}`);
+    const tm = utils.getTimeout(scraper.timeout);
+    this.logger(`Scraper #${i} sleep during ${tm} before next scan`);
     this.timers[i] = setTimeout((s, i) => this.tick(s, i), tm, scraper, i);
   }
 
@@ -40,11 +37,11 @@ class service {
         clearTimeout(e);
       }
     });
-    console.log(`\n * service ${this.name} exited ` + (new Date()).toString() + '\nbye!');
+    this.logger.info(`\nService ${this.name} exited ` + utils.getCurDateTimeStr() + '\nbye!');
     done();
   }
 }
 
-module.exports.create = (name) => {
-  return new service(name);
+module.exports.create = (logger, name) => {
+  return new service(logger, name);
 }

@@ -1,18 +1,20 @@
 'use strict';
 
-const baseActor = require('./baseActor');
-
 const request = require('request');
 const parseXml = require('xml2js').parseString;
 const url = require('url');
 const cheerio = require('cheerio');
 const moment = require('moment');
 const shuffle = require('fisher-yates');
+const delay = require('delay');
+
+const utils = require('./../utils');
+const baseActor = require('./baseActor');
 
 class actor01 extends baseActor {
 
-  constructor(config, db) {
-    super(config, db);
+  constructor(logger, config, db) {
+    super(logger, config, db);
   }
 
   async doRequest(url) {
@@ -28,11 +30,10 @@ class actor01 extends baseActor {
   }
 
   async execute() {
-    for(const kw of shuffle(keywords.slice(2,3))) {
-      console.log('1 - start', kw);
+    for(const kw of shuffle(keywords.slice(3,4))) {
       //
-      await this.doRequest(`https://ssssjobs.dou.ua/vacancies/?category=${kw}`).
-      then((data) => {
+      await this.doRequest(`https://jobs.dou.ua/vacancies/?category=${kw}`).
+      then(async (data) => {
         // get search results
         let items = [];
         let $ = cheerio.load(data);
@@ -45,15 +46,14 @@ class actor01 extends baseActor {
         });
         // scan vacancies
         for(const e of items) {
-          console.log('2 - start', e);
-          request(e, async (err, resp, data) => {
-            if (!err) {
+          let vacancy = null;
+          await this.doRequest(e).then((data) => {
               $ = cheerio.load(data);
               const vnode = $('.b-vacancy');
               const companyUrl = $(vnode).find('.b-compinfo a').attr().href;
               const dateStr = $(vnode).find('.date').text();
               const m = moment(dateStr, 'DD MMMM YYYY', 'ru');
-              const vacancy = {
+              vacancy = {
                 url: e,
                 company: {
                   id: url.parse(companyUrl).pathname.split('/')[2],
@@ -65,24 +65,30 @@ class actor01 extends baseActor {
                 title: $(vnode).find('.g-h2').text(),
                 text:  $(vnode).find('.l-vacancy .vacancy-section').text()
               }
-              console.log(vacancy);
-            }
+          }).catch( e => {
+            console.log(e);
           });
-          console.log('2 - end', e);
-          break;
+          if (vacancy) {
+            await this.vacancyManager.add(vacancy);
+          }
+          const tm = utils.getTimeout(this.config.timeouts.subLoop);
+          console.log(`# sleep for ${tm} before next request`);
+          await delay(tm);
         }
       }).
       catch( e => {
         console.log(e);
       });
-      console.log('1 - end', kw);
     }
   }
-
 }
 
-module.exports.factory = () => (config, db) => {
-  return new actor01(config, db);
+module.exports.factory = () => (logger, config, db) => {
+  const actor = new actor01(logger, config, db);
+  return Object.freeze({
+    getEntry: () => actor.getEntry(),
+    execute: async () => await actor.execute()
+  });
 }
 
 const keywords = [

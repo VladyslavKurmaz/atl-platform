@@ -1,18 +1,5 @@
-import makeAddVacancy from './add-vacancy'
-import vacanciesDb from '../storages'
+'use strict';
 
-const addVacacny = makeAddVacacny({ commentsDb, handleModeration })
-const editComment = makeEditComment({ commentsDb, handleModeration })
-const listComments = makeListComments({ commentsDb })
-const removeComment = makeRemoveComment({ commentsDb })
-
-const commentService = Object.freeze({
-  addComment,
-  editComment,
-  handleModeration,
-  listComments,
-  removeComment
-})
-
-export default commentService
-export { addComment, editComment, listComments, removeComment }
+module.exports = {
+  createVacancyManager: require('./vacancyManager').factory()
+}
