@@ -16,10 +16,10 @@ class service {
   }
 
   async tick(scraper, i) {
-    this.logger.info(` * service ${this.name} waked up at ` + utils.getCurDateTimeStr());
+    this.logger.info(`Scraper #${i} waked up at ` + utils.getCurDateTimeStr());
     await scraper.execute();
     const tm = utils.getTimeout(scraper.timeout);
-    this.logger(`Scraper #${i} sleep during ${tm} before next scan`);
+    this.logger.info(`Scraper #${i} will sleep during ${tm} before next scan`);
     this.timers[i] = setTimeout((s, i) => this.tick(s, i), tm, scraper, i);
   }
 
