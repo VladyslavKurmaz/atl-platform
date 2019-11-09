@@ -2,18 +2,20 @@
 
 class vacanciesDb {
 
-  constructor() {
+  constructor(logger) {
+    this.logger = logger;
   }
 
-  async hi() {
+  async insert(desc) {
+    this.logger.info(desc);
   }
 }
 
 
-module.exports.create = () => {
-  const db = new vacanciesDb();
+module.exports.create = (logger) => {
+  const db = new vacanciesDb(logger);
   return Object.freeze({
-    hi: async () => db.hi()
+    insert: async (desc) => await db.insert(desc)
   });
 }
 

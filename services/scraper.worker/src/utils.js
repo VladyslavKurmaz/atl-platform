@@ -1,5 +1,7 @@
 'use strict';
 
+const cuid = require('cuid');
+
 module.exports = {
   getTimeout: ({ middle, deviation }) => {
     const delta = middle * deviation / 100;
@@ -9,5 +11,8 @@ module.exports = {
   },
   getCurDateTimeStr: () => {
     return (new Date()).toString();
+  },
+  getUuid: () => {
+    return cuid();
   }
 }

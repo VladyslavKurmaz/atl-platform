@@ -14,7 +14,7 @@ const baseActor = require('./baseActor');
 class actor01 extends baseActor {
 
   constructor(logger, config, db) {
-    super(logger, config, db);
+    super(logger, 'Actor01', config, db);
   }
 
   async doRequest(url) {
@@ -30,8 +30,9 @@ class actor01 extends baseActor {
   }
 
   async execute() {
-    for(const kw of shuffle(keywords.slice(3,4))) {
+    for(const kw of shuffle(keywords.slice(0,1))) {
       //
+      this.logger.info(`${this.name} lookups keyword(s): ${kw}`);
       await this.doRequest(`https://jobs.dou.ua/vacancies/?category=${kw}`).
       then(async (data) => {
         // get search results
@@ -72,7 +73,7 @@ class actor01 extends baseActor {
             await this.vacancyManager.add(vacancy);
           }
           const tm = utils.getTimeout(this.config.timeouts.subLoop);
-          console.log(`# sleep for ${tm} before next request`);
+          this.logger.info(`${this.name} will sleep for ${tm} before next request`);
           await delay(tm);
         }
       }).

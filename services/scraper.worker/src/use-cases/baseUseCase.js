@@ -1,8 +1,9 @@
 'use strict';
 
 class baseUseCase {
-  constructor(logger) {
+  constructor(logger, db) {
     this.logger = logger;
+    this.db = db;
   }
 }
 

@@ -3,11 +3,12 @@
 const factory = require('./../use-cases');
 
 class baseActor {
-  constructor(logger, config, db) {
-    this.getEntry.logger = logger;
+  constructor(logger, name, config, db) {
+    this.logger = logger;
+    this.name = name;
     this.config = config;
     this.db = db;
-    this.vacancyManager = factory.createVacancyManager(this.logger);
+    this.vacancyManager = factory.createVacancyManager(this.logger, this.db);
   }
 
   getEntry() {
