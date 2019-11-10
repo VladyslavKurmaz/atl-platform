@@ -17,31 +17,37 @@ const config = {
   }
 };
 
-// logger
+// utils
 const logger = require('./logger').create(3);
+const utils = require('./utils');
 
-// create persistent storage
-const db = require('./drivers/vacancies-db').create(logger);
+// Abstaract factories 
+const entities = require('./entities');
+const rules = require('./rules');
+const adapters = require('./adapters');
+const drivers = require('./drivers');
 
-// create control service
-const service = require('./service').create(logger, 'org.attlas.services.scraper.worker');
-
-// run scan cycle
-const factory = require('./interfaces');
-service.init() ? service.run([
-  factory.createActor01(logger, config.actor01, db).getEntry()
-]) : service.shutdown();
-
+// create persistent storage adn nain service
+const db = drivers.createDb(logger);
+const service = drivers.createService(logger, utils, 'org.attlas.services.scraper.worker');
 
 // take care about grateful exit
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(sig => {
   process.on(sig, () => {
-    service.shutdown((err) => {
-      if (err) {
-        console.error(err);
-        process.exit(1);
-      }
-      process.exit(0);
-    });
+    service.shutdown().
+    then(() => process.exit(0)).
+    catch(e => { console.error(e); process.exit(1); })
   });
 });
+
+// run scan cycle
+(async () => {
+  try {
+    await service.init() ? service.run([
+      adapters.createActor01(logger, utils, db, config.actor01, rules).getEntry()
+    ]) : service.shutdown();
+  } catch (e) {
+    console.log(e);
+  }
+})();
+

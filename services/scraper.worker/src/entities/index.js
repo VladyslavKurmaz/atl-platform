@@ -1,21 +1,5 @@
-import buildMakeVacancy from './vacancy'
+'use strict';
 
-const makeVacancy = buildMakeVacancy({
-  isValidUrl: (url) => {
-    return true;
-  }
-  isValidCompany: (company) => {
-    return true;
-  }
-  isValidDate: (publishDate) => {
-    return true;
-  }
-  isValidLocation: (location) => {
-    return true;
-  }
-  isValidCurrency: (salary) => {
-    return true;
-  }
- });
-
-export default makeVacancy;
+module.exports = {
+  createVacancy: require('./vacancy').builder()
+}

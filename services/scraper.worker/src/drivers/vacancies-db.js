@@ -12,7 +12,7 @@ class vacanciesDb {
 }
 
 
-module.exports.create = (logger) => {
+module.exports.builder = () => (logger) => {
   const db = new vacanciesDb(logger);
   return Object.freeze({
     insert: async (desc) => await db.insert(desc)

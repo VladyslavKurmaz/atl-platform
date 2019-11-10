@@ -9,12 +9,13 @@ const shuffle = require('fisher-yates');
 const delay = require('delay');
 
 const utils = require('./../utils');
-const baseActor = require('./baseActor');
+const baseAdapter = require('./baseAdapter');
 
-class actor01 extends baseActor {
+class actor01 extends baseAdapter {
 
-  constructor(logger, config, db) {
-    super(logger, 'Actor01', config, db);
+  constructor(logger, utils, db, config, rules) {
+    super(logger, utils, db, config, 'Actor01');
+    this.vacancyManager = rules.createVacancyManager(this.logger, this.utils, this.db);
   }
 
   async doRequest(url) {
@@ -84,8 +85,8 @@ class actor01 extends baseActor {
   }
 }
 
-module.exports.factory = () => (logger, config, db) => {
-  const actor = new actor01(logger, config, db);
+module.exports.builder = () => (logger, utils, db, config, rules) => {
+  const actor = new actor01(logger, utils, db, config, rules);
   return Object.freeze({
     getEntry: () => actor.getEntry(),
     execute: async () => await actor.execute()
