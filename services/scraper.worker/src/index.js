@@ -43,6 +43,7 @@ const service = drivers.createService(logger, utils, 'org.attlas.services.scrape
 // run scan cycle
 (async () => {
   try {
+    await db.connect('mongodb://localhost:27017/', 'scraper', 'scrpaer', 'scraper');
     await service.init() ? service.run([
       adapters.createActor01(logger, utils, db, config.actor01, rules).getEntry()
     ]) : service.shutdown();
