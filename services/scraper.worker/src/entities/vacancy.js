@@ -3,13 +3,20 @@
 const baseEntity = require('./baseEntity');
 
 class vacancy extends baseEntity {
-  constructor(logger) {
-    super(logger);
+  constructor(context) {
+    super(context);
   }
 }
 
-module.exports.builder = (validator) => (
+module.exports.builder = () => (context, {url}) => {
+  //context.logger.info(url);
+  return Object.freeze({
+  });
+}
+/*
+module.exports.builder = () => (
   logger,
+  utils,
   {
     url,
     company,
@@ -21,19 +28,19 @@ module.exports.builder = (validator) => (
     dateOfListing = Date.now()
   }) => {
   // validate input
-  if (!validator.isValidUrl(url)) {
+  if (!utils.validator.isValidUrl(url)) {
     throw new Error('Vacancy must have a valid url.')
   }
-  if (!validator.isValidCompany(company)) {
+  if (!utils.validator.isValidCompany(company)) {
     throw new Error('Vacancy must have an company.')
   }
-  if (!validator.isValidDate(publishDate)) {
+  if (!utils.validator.isValidDate(publishDate)) {
     throw new Error('Publish date is incorrect.')
   }
-  if (!title || text.title < 1) {
+  if (!utils.validator.isValidText(title)) {
     throw new Error('Title must include at least one character of text.')
   }
-  if (!text || text.length < 1) {
+  if (!utils.validator.isValidText(text)) {
     throw new Error('Text must include at least one character of text.')
   }
   if (!validator.isValidLocation(location)) {
@@ -47,3 +54,4 @@ module.exports.builder = (validator) => (
     getId: () => vacancy.getId()
   });
 }
+*/

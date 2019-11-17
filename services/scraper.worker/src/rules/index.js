@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  createVacancyManager: require('./vacancyManager').factory()
+  createVacancyManager: require('./vacancyManager').builder()
 }

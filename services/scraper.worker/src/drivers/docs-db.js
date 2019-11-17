@@ -1,29 +1,30 @@
 'use strict';
 
-class docsDb {
+const baseItem = require('./../baseItem');
 
-  constructor(logger) {
-    this.logger = logger;
+class docsDb extends baseItem {
+
+  constructor(context) {
+    super(context);
     this.client = null;
     this.dbo = null;
   }
 
   async connect(url, dbName, user, pass) {
     if (!this.client) {
-      this.client = await require('mongodb').MongoClient.connect(url, { useNewUrlParser: true });
+      this.client = await require('mongodb').MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
     }
     this.dbo = this.client.db(dbName);
   }
 
   async insert(desc) {
-    this.logger.info(desc);
-    this.dbo.collection("vacancies").insert(desc);
+    this.context.logger.info(desc.url);
+    this.dbo.collection("vacancies").insertOne(desc);
   }
 }
 
-
-module.exports.builder = () => (logger) => {
-  const db = new docsDb(logger);
+module.exports.builder = () => (context) => {
+  const db = new docsDb(context);
   return Object.freeze({
     connect: async (url, dbName, user, pass) => await db.connect(url, dbName, user, pass),
     insert: async (desc) => await db.insert(desc)

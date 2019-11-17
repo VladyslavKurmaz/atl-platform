@@ -1,20 +1,20 @@
 'use strict';
 
-const utils = require('./../utils');
 const baseRule = require('./baseRule');
 
 class vacancyManager extends baseRule {
-  constructor(logger, utils, db) {
-    super(logger, utils, db);
+  constructor(context) {
+    super(context);
   }
 
   async add(desc) {
-    await this.db.insert({id: this.utils.getUuid(), ...desc});
+    const vacancy = this.context.entities.createVacancy(this.context, desc);
+    await this.context.db.insert({id: this.context.utils.getUuid(), ...desc});
   }
 }
 
-module.exports.factory = () => (logger, utils, db) => {
-  const manager = new vacancyManager(logger, utils, db);
+module.exports.builder = () => (context) => {
+  const manager = new vacancyManager(context);
   return Object.freeze({
     add: async (desc) => await manager.add(desc)
   });

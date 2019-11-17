@@ -11,7 +11,7 @@ const config = {
       subLoop: {
         //middle: 5 * 60 * 1000, // every 5 minutes
         middle: 10 * 1000, // every 10 seconds
-        deviation: 10
+        deviation: 20
       }
     }
   }
@@ -21,15 +21,20 @@ const config = {
 const logger = require('./logger').create(3);
 const utils = require('./utils');
 
-// Abstaract factories 
-const entities = require('./entities');
-const rules = require('./rules');
-const adapters = require('./adapters');
-const drivers = require('./drivers');
+// Create main context
+const context = require('./context').create({
+  logger: logger,
+  utils: utils,
+  entities: require('./entities'),
+  rules: require('./rules'),
+  adapters: require('./adapters'),
+  drivers: require('./drivers')
+});
 
-// create persistent storage adn nain service
-const db = drivers.createDb(logger);
-const service = drivers.createService(logger, utils, 'org.attlas.services.scraper.worker');
+// create persistent storage and main service
+context.add({db: context.drivers.createDb(context.clone('logger'))});
+const service = context.drivers.createService(context.clone('logger', 'utils'), 'org.attlas.services.scraper.worker');
+
 
 // take care about grateful exit
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(sig => {
@@ -43,9 +48,11 @@ const service = drivers.createService(logger, utils, 'org.attlas.services.scrape
 // run scan cycle
 (async () => {
   try {
-    await db.connect('mongodb://localhost:27017/', 'scraper', 'scrpaer', 'scraper');
+    await context.db.connect('mongodb://46.101.7.84:27017/', 'scraper', 'scraper', 'scraper');
     await service.init() ? service.run([
-      adapters.createActor01(logger, utils, db, config.actor01, rules).getEntry()
+      context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),
+      context.adapters.createScraper02(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),
+      context.adapters.createScraper03(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)
     ]) : service.shutdown();
   } catch (e) {
     console.log(e);

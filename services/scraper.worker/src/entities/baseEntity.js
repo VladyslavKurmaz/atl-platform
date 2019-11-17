@@ -1,8 +1,10 @@
 'use strict';
 
-class baseEntity {
-  constructor(logger) {
-    this.logger = logger;
+const baseItem = require('./../baseItem');
+
+class baseEntity extends baseItem{
+  constructor(context) {
+    super(context)
   }
 }
 

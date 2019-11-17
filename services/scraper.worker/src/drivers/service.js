@@ -1,13 +1,14 @@
 'use strict';
 
-class service {
+const baseItem = require('./../baseItem');
 
-  constructor(logger, utils, name) {
-    this.logger = logger;
-    this.utils = utils;
+class service extends baseItem {
+
+  constructor(context, name) {
+    super(context)
     this.name = name;
     this.timers = [];
-    this.logger.info(`Service ${this.name} started ` + this.utils.getCurDateTimeStr());
+    this.context.logger.info(`Service ${this.name} started ` + this.context.utils.getCurDateTimeStr());
   }
 
   async init() {
@@ -15,10 +16,11 @@ class service {
   }
 
   async tick(scraper, i) {
-    this.logger.info(`Scraper #${i} waked up at ` + this.utils.getCurDateTimeStr());
+    const scraperName = scraper.getName();
+    this.context.logger.info(`Scraper ${scraperName} waked up at ` + this.context.utils.getCurDateTimeStr());
     await scraper.execute();
-    const tm = this.utils.getTimeout(scraper.timeout);
-    this.logger.info(`Scraper #${i} will sleep during ${tm} before next scan`);
+    const tm = scraper.getScanTimeout();
+    this.context.logger.info(`Scraper ${scraperName} will sleep during ${tm} before next scan`);
     this.timers[i] = setTimeout((s, i) => this.tick(s, i), tm, scraper, i);
   }
 
@@ -26,8 +28,10 @@ class service {
     let i = 0;
     for (const scraper of scrapers) {
       this.timers.push(null);
-      await this.tick(scraper, i++);
+      this.tick(scraper, i++);
     }
+    // Do we need wait for all functionality here ?
+    // await Promise.all();
   }
 
   async shutdown() {
@@ -36,12 +40,12 @@ class service {
         clearTimeout(e);
       }
     });
-    this.logger.info(`\nService ${this.name} exited ` + this.utils.getCurDateTimeStr() + '\nbye!');
+    this.context.logger.info(`\nService ${this.name} exited ` + this.context.utils.getCurDateTimeStr() + '\nbye!');
   }
 }
 
-module.exports.builder = () => (logger, utils, name) => {
-  const srv = new service(logger, utils, name);
+module.exports.builder = () => (context, name) => {
+  const srv = new service(context, name);
   return Object.freeze({
     init: async () => await srv.init(),
     run: async (scrapers) => await srv.run(scrapers),

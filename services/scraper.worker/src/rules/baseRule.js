@@ -1,10 +1,10 @@
 'use strict';
 
-class baseUseCase {
-  constructor(logger, utils, db) {
-    this.logger = logger;
-    this.utils = utils;
-    this.db = db;
+const baseItem = require('./../baseItem');
+
+class baseUseCase extends baseItem {
+  constructor(context) {
+    super(context);
   }
 }
 
