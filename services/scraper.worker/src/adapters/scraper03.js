@@ -1,11 +1,8 @@
 'use strict';
 
-const parseXml = require('xml2js').parseString;
+const url = require('url');
 const moment = require('moment');
-const shuffle = require('fisher-yates');
-const delay = require('delay');
 
-const utils = require('../utils');
 const { baseScraper } = require('./baseScraper');
 
 class scraper03 extends baseScraper {
@@ -23,31 +20,34 @@ class scraper03 extends baseScraper {
     $("#pjax-job-list > .card").each(function (i, e) {
       const node = $(this).find('h2 > a');
       if (node.length) {
-        const title = node.text();
-        const href = node.attr().href;
-        items.push(href);
+        items.push(node.attr().href);
       }
     });
     return items.map(e => this.baseUrl + e);
   }
   
   parseVacancy($) {
-    const node = $('.card');
-    //const companyUrl = $(vnode).find('.b-compinfo > a').attr().href;
+    const node = $('.card.wordwrap');
+    let companyUrl = $(node).find('p > a').attr().href;
+    let companyName = $(node).find('p > a > b').text();
     const dateStr = $(node).find('.cut-bottom-print > span').text();
-    const arr = dateStr.split(String.fromCharCode(160));
-    const m = moment(arr[1], 'DD MMMM YYYY', 'uk_UA');
-    return {/*
+    let m = moment(dateStr.split(String.fromCharCode(160))[1], 'DD MMMM YYYY', 'uk_UA');
+    if (!m.isValid()) {
+      m = moment();
+    }
+    let location = $('.text-indent.add-top-sm > .glyphicon-map-marker').parent().text().split(',')[0].trim();
+    let salary = $('.text-indent.text-muted.add-top-sm > b').text();
+    return {
       company: {
-        id: url.parse(companyUrl).pathname.split('/')[2],
+        id: url.parse(companyUrl).pathname.split('/')[3],
         url: companyUrl,
-        name: $(vnode).find('.b-compinfo > .info > .l-n > a').first().text()
-      },*/
+        name: companyName
+      },
       date: m.format('YYYY-MM-DD'),
-      //location: $(vnode).find('.l-vacancy .place').text().trim(),
-      //salary: $(vnode).find('.l-vacancy .salary').text().trim(),*/
-      title: $(node).find('h1').text(),
-      text: $(node).find('#job-description').text()
+      location: location,
+      salary: salary,
+      title: $(node).find('#h1-name').text(),
+      text: $(node).find('#job-description').text().trim()
     }
   }
 }

@@ -8,7 +8,7 @@ class vacancyManager extends baseRule {
   }
 
   async add(desc) {
-    const vacancy = this.context.entities.createVacancy(this.context, desc);
+    const vacancy = this.context.entities.createVacancy(this.context.clone('logger', 'utils'), desc);
     await this.context.db.insert({id: this.context.utils.getUuid(), ...desc});
   }
 }

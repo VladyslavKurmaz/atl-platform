@@ -6,9 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "serve": "NODE_ENV=development nodemon --watch src --watch spec",
-    "jasmine-init": "./node_modules/jasmine/bin/jasmine.js init",
-    "jasmine": "./node_modules/jasmine/bin/jasmine.js",
-    "coverage": "istanbul cover --include-all-sources spec/specs.js && istanbul check-coverage"
+    "test-jest": "jest",
+    "test": "jest"
   },
   "author": "vladislav.kurmaz@gmail.com",
   "license": "ISC",
@@ -24,11 +23,8 @@
     "xml2js": "^0.4.22"
   },
   "devDependencies": {
-    "istanbul": "^0.4.5",
     "jasmine": "^3.5.0",
-    "jasmine-console-reporter": "^3.1.0",
-    "jasmine-core": "^3.5.0",
-    "jasmine-node": "^3.0.0",
+    "jest": "^24.9.0",
     "nodemon": "^1.19.4"
   }
 }

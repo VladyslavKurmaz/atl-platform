@@ -50,9 +50,9 @@ const service = context.drivers.createService(context.clone('logger', 'utils'), 
   try {
     await context.db.connect('mongodb://46.101.7.84:27017/', 'scraper', 'scraper', 'scraper');
     await service.init() ? service.run([
-      context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),
+      context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)/*,
       context.adapters.createScraper02(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),
-      context.adapters.createScraper03(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)
+      context.adapters.createScraper03(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)*/
     ]) : service.shutdown();
   } catch (e) {
     console.log(e);
