@@ -8,9 +8,42 @@ class vacancy extends baseEntity {
   }
 }
 
-module.exports.builder = () => (context, {url}) => {
-  //context.logger.info(url);
+module.exports.builder = () => (
+  context,
+  {
+    url,
+    date,
+    title,
+    text,
+    location,
+    salary
+  }) => {
+  // validate input
+  if (!context.utils.validator.isValidUrl(url)) {
+    throw new Error('Vacancy must have a valid url.')
+  }
+  if (!context.utils.validator.isValidDate(date)) {
+    throw new Error('Publish date is incorrect.')
+  }
+  if (!context.utils.validator.isValidText(title)) {
+    throw new Error('Title must include at least one character of text.')
+  }
+  if (!context.utils.validator.isValidText(text)) {
+    throw new Error('Text must include at least one character of text.')
+  }
+  if (!context.utils.validator.isValidLocation(location)) {
+    throw new Error('Text must be defined.')
+  }
+  if (!context.utils.validator.isValidCurrency(salary)) {
+    throw new Error('Salary must be in valid format.')
+  }
   return Object.freeze({
+    getUrl: () => url,
+    getDate: () => date,
+    getTitle: () => title,
+    getText: () => text,
+    getLocation: () => location,
+    getSalary: () => salary
   });
 }
 /*
@@ -27,28 +60,6 @@ module.exports.builder = () => (
     salary,
     dateOfListing = Date.now()
   }) => {
-  // validate input
-  if (!utils.validator.isValidUrl(url)) {
-    throw new Error('Vacancy must have a valid url.')
-  }
-  if (!utils.validator.isValidCompany(company)) {
-    throw new Error('Vacancy must have an company.')
-  }
-  if (!utils.validator.isValidDate(publishDate)) {
-    throw new Error('Publish date is incorrect.')
-  }
-  if (!utils.validator.isValidText(title)) {
-    throw new Error('Title must include at least one character of text.')
-  }
-  if (!utils.validator.isValidText(text)) {
-    throw new Error('Text must include at least one character of text.')
-  }
-  if (!validator.isValidLocation(location)) {
-    throw new Error('Text must be defined.')
-  }
-  if (!validator.isValidCurrency(salary)) {
-    throw new Error('Salary must be in valid format.')
-  }
   const vacancy = new vacancy(logger);
   return Object.freeze({
     getId: () => vacancy.getId()

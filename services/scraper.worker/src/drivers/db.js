@@ -1,8 +1,8 @@
 'use strict';
 
-const baseItem = require('./../baseItem');
+const baseItem = require('../baseItem');
 
-class docsDb extends baseItem {
+class db extends baseItem {
 
   constructor(context) {
     super(context);
@@ -15,19 +15,30 @@ class docsDb extends baseItem {
       this.client = await require('mongodb').MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
     }
     this.dbo = this.client.db(dbName);
+    return true;
   }
 
   async insert(desc) {
-    this.context.logger.info(desc.url);
-    this.dbo.collection("vacancies").insertOne(desc);
+    this.dbo.collection("docs").insertOne(desc);
+  }
+
+  async findByHash(hash) {
+    const result = await this.dbo.collection('docs').find({ hash: hash });
+    const found = await result.toArray();
+    if (found.length !== 0) {
+      const { _id: id, ...insertedInfo } = found[0];
+      return { id, ...insertedInfo }
+    }
+    return null;
   }
 }
 
 module.exports.builder = () => (context) => {
-  const db = new docsDb(context);
+  const scraperDb = new db(context);
   return Object.freeze({
-    connect: async (url, dbName, user, pass) => await db.connect(url, dbName, user, pass),
-    insert: async (desc) => await db.insert(desc)
+    connect: async (url, dbName, user, pass) => await scraperDb.connect(url, dbName, user, pass),
+    insert: async (desc) => await scraperDb.insert(desc),
+    findByHash: async (hash) => await scraperDb.findByHash(hash)
   });
 }
 

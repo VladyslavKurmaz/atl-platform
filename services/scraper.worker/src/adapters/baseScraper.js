@@ -40,7 +40,7 @@ class baseScraper extends baseItem {
   }
 
   async execute() {
-    for (const kw of shuffle(keywords.slice(9, 10))) {
+    for (const kw of shuffle(keywords.slice(0, 1))) {
       //
       this.context.logger.info(`${this.name} lookups keyword(s): ${kw}`);
 
@@ -53,6 +53,10 @@ class baseScraper extends baseItem {
           let i = 0;
           const count = items.length;
           for (const e of items) {
+            const tm = utils.getTimeout(this.config.timeouts.subLoop);
+            this.context.logger.info(`${this.name} will sleep for ${tm} before next request`);
+            await delay(tm);
+            //
             i++;
             this.context.logger.info(`${this.name} executes step ${i} of ${count}, ${e}`);
             let vacancy = null;
@@ -66,9 +70,6 @@ class baseScraper extends baseItem {
               vacancy.url = e;
               await this.vacancyManager.add(vacancy);
             }
-            const tm = utils.getTimeout(this.config.timeouts.subLoop);
-            this.context.logger.info(`${this.name} will sleep for ${tm} before next request`);
-            await delay(tm);
           }
         }).catch(e => {
           this.context.logger.error(this.name, e);

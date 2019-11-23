@@ -17,10 +17,10 @@ class service extends baseItem {
 
   async tick(scraper, i) {
     const scraperName = scraper.getName();
-    this.context.logger.info(`Scraper ${scraperName} waked up at ` + this.context.utils.getCurDateTimeStr());
+    this.context.logger.info(`${scraperName} waked up at ` + this.context.utils.getCurDateTimeStr());
     await scraper.execute();
     const tm = scraper.getScanTimeout();
-    this.context.logger.info(`Scraper ${scraperName} will sleep during ${tm} before next scan`);
+    this.context.logger.info(`${scraperName} will sleep during ${tm} before next scan`);
     this.timers[i] = setTimeout((s, i) => this.tick(s, i), tm, scraper, i);
   }
 

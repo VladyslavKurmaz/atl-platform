@@ -8,8 +8,25 @@ class vacancyManager extends baseRule {
   }
 
   async add(desc) {
+    // process company
+
+    // process vacancy
     const vacancy = this.context.entities.createVacancy(this.context.clone('logger', 'utils'), desc);
-    await this.context.db.insert({id: this.context.utils.getUuid(), ...desc});
+    const hash = this.context.utils.md5(vacancy.getUrl());
+    if (!await this.context.db.findByHash(hash)) {
+      await this.context.db.insert({
+        id: this.context.utils.getUuid(),
+        hash: hash,
+        url: vacancy.getUrl(),
+        date: new Date(vacancy.getDate()),
+        title: vacancy.getTitle(),
+        text: vacancy.getText(),
+        location: vacancy.getLocation(),
+        salary: vacancy.getSalary()
+      });
+    } else {
+      this.context.logger.info('Skip');
+    }
   }
 }
 

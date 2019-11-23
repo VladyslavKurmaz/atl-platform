@@ -33,7 +33,7 @@ const context = require('./context').create({
 
 // create persistent storage and main service
 context.add({db: context.drivers.createDb(context.clone('logger'))});
-const service = context.drivers.createService(context.clone('logger', 'utils'), 'org.attlas.services.scraper.worker');
+const service = context.drivers.createService(context.clone('logger', 'utils'), 'io.attlas.services.scraper.worker');
 
 
 // take care about grateful exit
@@ -48,7 +48,16 @@ const service = context.drivers.createService(context.clone('logger', 'utils'), 
 // run scan cycle
 (async () => {
   try {
-    await context.db.connect('mongodb://46.101.7.84:27017/', 'scraper', 'scraper', 'scraper');
+    let connected = false;
+    while (!connected) {
+      logger.info('Connecting to DB');
+      try {
+        connected = await context.db.connect('mongodb://46.101.7.84:27017/', 'scraper', 'scraper', 'scraper');
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    //
     await service.init() ? service.run([
       context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)/*,
       context.adapters.createScraper02(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),

@@ -9,7 +9,7 @@ module.exports = {
     const delta = middle * deviation / 100;
     const mi = Math.ceil(middle - delta);
     const ma = Math.floor(middle + delta);
-    return Math.floor(Math.random() * (ma - mi + 1)) + mi;    
+    return Math.floor(Math.random() * (ma - mi + 1)) + mi;
   },
   getCurDateTimeStr: () => {
     return (new Date()).toString();
@@ -33,14 +33,11 @@ module.exports = {
     isValidUrl: (url) => {
       return true;
     },
-    isValidCompany: (company) => {
-      return true;
-    },
     isValidDate: (date) => {
       return true;
     },
     isValidText: (text) => {
-      return (!title || text.title < 1);
+      return (text && text.length > 0);
     },
     isValidLocation: (location) => {
       return true;

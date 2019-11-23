@@ -2,5 +2,5 @@
 
 module.exports = {
   createService: require('./service').builder(),
-  createDb: require('./docs-db').builder()
+  createDb: require('./db').builder()
 }
