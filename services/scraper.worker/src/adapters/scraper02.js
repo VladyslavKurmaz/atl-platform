@@ -12,7 +12,7 @@ class scraper02 extends baseScraper {
   }
 
   getSearchUrl(kw) {
-    return `${this.baseUrl}/zapros/${kw}`
+    return `${this.baseUrl}/zapros/` + encodeURIComponent(kw);// + '/украина';
   }
 
   parseSearch($) {
@@ -28,11 +28,8 @@ class scraper02 extends baseScraper {
     return items.map(e => `${this.baseUrl}${e}`);
   }
 
-  parseVacancy($) {
-    let id = null;
-    let companyId = null;
+  parseVacancy($, vacancyUrl) {
     let companyUrl = null;
-    let companyName = null;
     let m = null;
     let location = null;
     let salary = null;
@@ -42,8 +39,6 @@ class scraper02 extends baseScraper {
     let node = $('.d_content');
     if (node.length) {
       companyUrl = this.baseUrl + $(node).find('a').attr().href;
-      companyId = url.parse(companyUrl).pathname.split('/')[1];
-      companyName = null;
       const dateStr = $(node).find('.d_des > .d-items > .d-placeholder > .d-ph-item[id=d-date] > span[class=d-ph-value]').text();
       m = moment(dateStr, 'DD.MM.YYYY', 'ru');
       location = $(node).find('.d-ph-itemAddress > .d-ph-value').text();
@@ -54,8 +49,6 @@ class scraper02 extends baseScraper {
       node = $('.f-vacancy-inner-wrapper');
       if (node.length) {
         companyUrl = this.baseUrl + $(node).find('.f-vacancy-params > .f-main-params > .fd-f1 > .f-vacancy-title > a').attr().href;
-        companyId = url.parse(companyUrl).pathname.split('/')[1];
-        companyName = $(node).find('.f-vacancy-params > .f-main-params > .fd-f1 > .f-vacancy-title > a > span > span').text();
         const dateStr = $(node).find('.f-vacancy-header-wrapper > .fd-f-left > .f-date-holder').text();
         m = moment(dateStr, 'DD MMM YYYY', 'ru');
         location = $(node).find('.f-vacancy-city-param').text();
@@ -66,21 +59,33 @@ class scraper02 extends baseScraper {
         throw new Error('Invalid page format.')
       }
     }
-    companyUrl = this.context.utils.cleanupUrl(companyUrl);
     return {
-      id: id,
-      company: {
-        id: companyId,
-        url: companyUrl,
-        name: companyName
-      },
-      date: m.format('YYYY-MM-DD'),
-      location: location,
-      salary: salary,
-      title: title,
-      text: text
+      companyUrl: this.context.utils.cleanupUrl(companyUrl),
+      vacancy: {
+        url: vacancyUrl,
+        date: m.format('YYYY-MM-DD'),
+        location: [location],
+        salary: salary,
+        title: title,
+        text: text
+      }
     }
   }
+
+  parseCompany($, companyUrl) {
+    let node = $('#prf-header');
+    const name = $(node).find('h1[class=truncate_companyname]').text().trim();
+    const masterKey = name.split('/')[0].trim().toLowerCase();
+    const domain = $(node).find('#ctl00_ctl00_centerZone_cmp_site').attr().href;
+    return {
+      url: companyUrl,
+      key: url.parse(companyUrl).pathname.split('/')[1],
+      masterKey: masterKey,
+      name: name,
+      domain: domain
+    }
+  }
+
 }
 
 module.exports.builder = () => (context, config) => {

@@ -40,35 +40,46 @@ class baseScraper extends baseItem {
   }
 
   async execute() {
-    for (const kw of shuffle(keywords.slice(0, 1))) {
-      //
-      this.context.logger.info(`${this.name} lookups keyword(s): ${kw}`);
-
+    let i = 0;
+    const kws = shuffle(keywords/*.slice(0, 1)*/);
+    const kwsCount = kws.length;
+    for (const kw of kws) {
+      i++;
       await this.doRequest(this.getSearchUrl(kw)).
         then(async (data) => {
           // get search results
           let $ = cheerio.load(data);
           let items = this.parseSearch($);
           // scan vacancies
-          let i = 0;
+          let j = 0;
           const count = items.length;
           for (const e of items) {
             const tm = utils.getTimeout(this.config.timeouts.subLoop);
             this.context.logger.info(`${this.name} will sleep for ${tm} before next request`);
             await delay(tm);
             //
-            i++;
-            this.context.logger.info(`${this.name} executes step ${i} of ${count}, ${e}`);
+            j++;
+            this.context.logger.info(`${this.name} [${kw} ${i}/${kwsCount}] [${j}/${count}, ${e}`);
             let vacancy = null;
+            let companyUrl = null;
+            let company = null;
             await this.doRequest(e).then((data) => {
               $ = cheerio.load(data);
-              vacancy = this.parseVacancy($);
+              ({ companyUrl, vacancy } = this.parseVacancy($, e));
             }).catch(e => {
               this.context.logger.error(this.name, e);
             });
-            if (vacancy) {
-              vacancy.url = e;
-              await this.vacancyManager.add(vacancy);
+            if (companyUrl) {
+              // parse company
+              await this.doRequest(companyUrl).then((data) => {
+                $ = cheerio.load(data);
+                company = this.parseCompany($, companyUrl);
+              }).catch(e => {
+                this.context.logger.error(this.name, e);
+              });
+            }
+            if (vacancy && company) {
+              await this.vacancyManager.add(company, vacancy);
             }
           }
         }).catch(e => {
@@ -88,26 +99,28 @@ class baseScraper extends baseItem {
 const keywords = [
   'java',
   'python',
+  '.net',
+  'ruby',
+  'php',
+  'ios',
+  'macos',
+  'c++',
+  'android',
+  'qa',
+  'front end',
+  'back end',
+  'project manager',
   'golang',
   'scala',
   'erlang',
-  'ruby',
-  'php',
   'swift',
-  'c++',
   'react',
   'react native',
   'angular',
   'nodejs',
-  '.net',
-  '1c',
-  'android',
   'cordova',
-  'analyst',
-  'qa',
   'devops',
   'sre',
-  'project management',
   'data science',
   'unity',
   'embedded',
@@ -115,13 +128,7 @@ const keywords = [
   'blockchain',
   'system administrator',
   'support',
-  'hr',
-  'sales',
-  'dba',
-  'erp',
-  'crm',
-  'technical writer',
-  'seo'
+  'dba'
 ];
 
 module.exports = { baseScraper };

@@ -12,7 +12,7 @@ class scraper01 extends baseScraper {
   }
 
   getSearchUrl(kw) {
-    return `${this.baseUrl}/vacancies/?category=${kw}`
+    return `${this.baseUrl}/vacancies/?category=` + encodeURIComponent(kw);
   }
 
   parseSearch($) {
@@ -25,22 +25,35 @@ class scraper01 extends baseScraper {
     return items.map(e => this.context.utils.cleanupUrl(e));
   }
 
-  parseVacancy($) {
+  parseVacancy($, vacancyUrl) {
     const vnode = $('.b-vacancy');
     const companyUrl = $(vnode).find('.b-compinfo > a').attr().href;
     const dateStr = $(vnode).find('.date').text();
     const m = moment(dateStr, 'DD MMMM YYYY', 'ru');
+    const location = ($(vnode).find('.l-vacancy .place').text().trim());
     return {
-      company: {
-        id: url.parse(companyUrl).pathname.split('/')[2],
-        url: companyUrl,
-        name: $(vnode).find('.b-compinfo > .info > .l-n > a').first().text()
-      },
-      date: m.format('YYYY-MM-DD'),
-      location: $(vnode).find('.l-vacancy .place').text().trim(),
-      salary: $(vnode).find('.l-vacancy .salary').text().trim(),
-      title: $(vnode).find('.g-h2').text(),
-      text: $(vnode).find('.l-vacancy .vacancy-section').text()
+      companyUrl: companyUrl,
+      vacancy: {
+        url: vacancyUrl,
+        date: m.format('YYYY-MM-DD'),
+        location: location.split(',').map(e => e.trim().split(' ')[0].trim()),
+        salary: $(vnode).find('.l-vacancy .salary').text().trim(),
+        title: $(vnode).find('.g-h2').text(),
+        text: $(vnode).find('.l-vacancy .vacancy-section').text()
+      }
+    }
+  }
+
+  parseCompany($, companyUrl) {
+    const vnode = $('.company-info');
+    const name = $(vnode).find('h1').text().trim();
+    const masterKey = name.split('/')[0].trim().toLowerCase();
+    return {
+      url: companyUrl,
+      key: url.parse(companyUrl).pathname.split('/')[2],
+      masterKey: masterKey,
+      name: name,
+      domain: $(vnode).find('.site').text().trim()
     }
   }
 
