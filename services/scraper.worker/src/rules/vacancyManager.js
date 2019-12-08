@@ -1,6 +1,6 @@
 'use strict';
 
-const gt = require('google-translate')('AIzaSyDZ9E25cDn2cXUjCxnPEEedr8DudcVfTcY', {});
+const gt = require('google-translate')('', {});
 const baseRule = require('./baseRule');
 
 /*
