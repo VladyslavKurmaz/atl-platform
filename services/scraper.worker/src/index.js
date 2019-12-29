@@ -52,15 +52,15 @@ const service = context.drivers.createService(context.clone('logger', 'utils'), 
     while (!connected) {
       logger.info('Connecting to DB');
       try {
-        connected = await context.db.connect('mongodb://46.101.7.84:27017/', 'scraper', 'scraper', 'scraper');
+        connected = await context.db.connect('46.101.7.84', '27017', 'scraper', 'ckWhjg8ZVjMc58B6', 'scraper');
       } catch (e) {
         console.log(e);
       }
     }
     //
     await service.init() ? service.run([
-      context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)/*,
-      context.adapters.createScraper02(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),
+      /*context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),*/
+      context.adapters.createScraper02(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)/*,
       context.adapters.createScraper03(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)*/
     ]) : service.shutdown();
   } catch (e) {

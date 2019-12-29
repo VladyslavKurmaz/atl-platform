@@ -8,22 +8,28 @@ class db extends baseItem {
     super(context);
     this.client = null;
     this.dbo = null;
+    this.companiesCollection = 'contacts';
+    this.vacanciesCollection = 'docs.vacancies';
+    this.translationsCollection = 'docs.translations'
   }
 
-  async connect(url, dbName, user, pass) {
+  async connect(host, port, user, pass, dbName) {
     if (!this.client) {
-      this.client = await require('mongodb').MongoClient.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
+      this.client = await require('mongodb').MongoClient.connect(
+        `mongodb://${user}:${pass}@${host}:${port}/`,
+        { useUnifiedTopology: true, useNewUrlParser: true }
+      );
     }
     this.dbo = this.client.db(dbName);
     return true;
   }
 
-  async insert(desc) {
-    this.dbo.collection("docs").insertOne(desc);
+  async insertCompany(company) {
+    await this.dbo.collection(this.companiesCollection).insertOne(company);
   }
 
-  async findByHash(hash) {
-    const result = await this.dbo.collection('docs').find({ hash: hash });
+  async findCompanyByHash(hash) {
+    const result = await this.dbo.collection(this.companiesCollection).find({ hash: hash });
     const found = await result.toArray();
     if (found.length !== 0) {
       const { _id: id, ...insertedInfo } = found[0];
@@ -31,14 +37,46 @@ class db extends baseItem {
     }
     return null;
   }
+
+  async insertVacancy(vacancy) {
+    await this.dbo.collection(this.vacanciesCollection).insertOne(vacancy);
+  }
+
+  async findVacancyByHash(hash) {
+    const result = await this.dbo.collection('this.vacanciesCollection').find({ hash: hash });
+    const found = await result.toArray();
+    if (found.length !== 0) {
+      const { _id: id, ...insertedInfo } = found[0];
+      return { id, ...insertedInfo }
+    }
+    return null;
+  }
+
+  async findTranslation(word) {
+    const result = await this.dbo.collection('docs.translations').find({ from: word });
+    const found = await result.toArray();
+    if (found.length !== 0) {
+      return found[0].to;
+    }
+    return null;
+  }
+
+  async addTranslation(from, to) {
+    await this.dbo.collection("docs.translations").insertOne({from: from, to: to});
+  }
+
 }
 
 module.exports.builder = () => (context) => {
   const scraperDb = new db(context);
   return Object.freeze({
-    connect: async (url, dbName, user, pass) => await scraperDb.connect(url, dbName, user, pass),
-    insert: async (desc) => await scraperDb.insert(desc),
-    findByHash: async (hash) => await scraperDb.findByHash(hash)
+    connect: async (host, port, user, pass, dbName) => await scraperDb.connect(host, port, user, pass, dbName),
+    insertCompany: async (company) => await scraperDb.insertCompany(company),
+    findCompanyByHash: async (company) => await scraperDb.findCompanyByHash(company),
+    insertVacancy: async (vacancy) => await scraperDb.insertVacancy(vacancy),
+    findVacancyByHash: async (vacancy) => await scraperDb.findVacancyByHash(vacancy),
+    findTranslation: async (word) => await scraperDb.findTranslation(word),
+    addTranslation: async (from, to) => await scraperDb.addTranslation(from, to)
   });
 }
 

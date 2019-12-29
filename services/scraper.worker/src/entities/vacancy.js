@@ -17,7 +17,8 @@ module.exports.builder = () => (
     text,
     location,
     salary
-  }) => {
+  }
+  ) => {
   // validate input
   if (!context.utils.validator.isValidUrl(url)) {
     throw new Error('Vacancy must have a valid url.')
@@ -46,23 +47,3 @@ module.exports.builder = () => (
     getSalary: () => salary
   });
 }
-/*
-module.exports.builder = () => (
-  logger,
-  utils,
-  {
-    url,
-    company,
-    publishDate,
-    title,
-    text,
-    location,
-    salary,
-    dateOfListing = Date.now()
-  }) => {
-  const vacancy = new vacancy(logger);
-  return Object.freeze({
-    getId: () => vacancy.getId()
-  });
-}
-*/
