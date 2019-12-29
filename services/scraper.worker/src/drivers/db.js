@@ -10,7 +10,8 @@ class db extends baseItem {
     this.dbo = null;
     this.companiesCollection = 'contacts';
     this.vacanciesCollection = 'docs.vacancies';
-    this.translationsCollection = 'docs.translations'
+    this.translationsCollection = 'docs.translations';
+    this.reportsCollection = 'docs.reports';
   }
 
   async connect(host, port, user, pass, dbName) {
@@ -43,7 +44,7 @@ class db extends baseItem {
   }
 
   async findVacancyByHash(hash) {
-    const result = await this.dbo.collection('this.vacanciesCollection').find({ hash: hash });
+    const result = await this.dbo.collection(this.vacanciesCollection).find({ hash: hash });
     const found = await result.toArray();
     if (found.length !== 0) {
       const { _id: id, ...insertedInfo } = found[0];
@@ -53,7 +54,7 @@ class db extends baseItem {
   }
 
   async findTranslation(word) {
-    const result = await this.dbo.collection('docs.translations').find({ from: word });
+    const result = await this.dbo.collection(this.translationsCollection).find({ from: word });
     const found = await result.toArray();
     if (found.length !== 0) {
       return found[0].to;
@@ -62,9 +63,14 @@ class db extends baseItem {
   }
 
   async addTranslation(from, to) {
-    await this.dbo.collection("docs.translations").insertOne({from: from, to: to});
+    const result = await this.dbo.collection(this.translationsCollection).insertOne({from: from, to: to});
   }
 
+  async calculateAggregateReport(query) {
+    const result = this.dbo.collection(this.vacanciesCollection).aggregate(query);
+    const found = await result.toArray();
+    return found;
+  }
 }
 
 module.exports.builder = () => (context) => {
@@ -76,7 +82,8 @@ module.exports.builder = () => (context) => {
     insertVacancy: async (vacancy) => await scraperDb.insertVacancy(vacancy),
     findVacancyByHash: async (vacancy) => await scraperDb.findVacancyByHash(vacancy),
     findTranslation: async (word) => await scraperDb.findTranslation(word),
-    addTranslation: async (from, to) => await scraperDb.addTranslation(from, to)
+    addTranslation: async (from, to) => await scraperDb.addTranslation(from, to),
+    calculateAggregateReport: async (query) => await scraperDb.calculateAggregateReport(query)
   });
 }
 

@@ -2,39 +2,46 @@
 
 // read config
 const config = {
-  actor01: {
-    timeouts: {
-      mainLoop: {
-        middle: 6 * 60 * 60 * 1000, // every 6 hours
-        deviation: 10
-      },
-      subLoop: {
-        //middle: 5 * 60 * 1000, // every 5 minutes
-        middle: 10 * 1000, // every 10 seconds
-        deviation: 20
+  scrapers: {
+    actor01: {
+      timeouts: {
+        mainLoop: {
+          middle: 6 * 60 * 60 * 1000, // every 6 hours
+          deviation: 10
+        },
+        subLoop: {
+          //middle: 5 * 60 * 1000, // every 5 minutes
+          middle: 10 * 1000, // every 10 seconds
+          deviation: 20
+        }
       }
+    }
+  },
+  reports: {
+    scheduling: {
+      hour: 23,
+      minute: 0,
+      dayOfWeek: 0
     }
   }
 };
 
-// utils
-const logger = require('./logger').create(3);
-const utils = require('./utils');
+// load environment variable from .env file
+const dotenv = require('dotenv').config();
 
 // Create main context
 const context = require('./context').create({
-  logger: logger,
-  utils: utils,
-  entities: require('./entities'),
-  rules: require('./rules'),
+  logger: require('./logger').create(3),
+  utils: require('./utils'),
   adapters: require('./adapters'),
-  drivers: require('./drivers')
+  rules: require('./rules'),
+  entities: require('./entities')
 });
 
 // create persistent storage and main service
-context.add({db: context.drivers.createDb(context.clone('logger'))});
-const service = context.drivers.createService(context.clone('logger', 'utils'), 'io.attlas.services.scraper.worker');
-
+const drivers = require('./drivers');
+context.add({db: drivers.createDb(context.clone('logger'))});
+const service = drivers.createService(context.clone('logger', 'utils', 'db', 'adapters', 'rules', 'entities'), process.env.COMPONENT_ID);
 
 // take care about grateful exit
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(sig => {
@@ -50,21 +57,23 @@ const service = context.drivers.createService(context.clone('logger', 'utils'), 
   try {
     let connected = false;
     while (!connected) {
-      logger.info('Connecting to DB');
+      context.logger.info('Connecting to DB');
       try {
-        connected = await context.db.connect('46.101.7.84', '27017', 'scraper', 'ckWhjg8ZVjMc58B6', 'scraper');
+        connected = await context.db.connect(
+          process.env.COMPONENT_PARAM_MONGO_HOST,
+          process.env.COMPONENT_PARAM_MONGO_PORT,
+          process.env.COMPONENT_PARAM_MONGO_USER,
+          process.env.COMPONENT_PARAM_MONGO_PASS,
+          process.env.COMPONENT_PARAM_MONGO_DBNAME
+        );
       } catch (e) {
-        console.log(e);
+        context.logger.error(e);
       }
     }
     //
-    await service.init() ? service.run([
-      /*context.adapters.createScraper01(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01),*/
-      context.adapters.createScraper02(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)/*,
-      context.adapters.createScraper03(context.clone('logger', 'utils', 'db', 'rules', 'entities'), config.actor01)*/
-    ]) : service.shutdown();
+    await service.init() ? await service.run(config) : await service.shutdown();
   } catch (e) {
-    console.log(e);
+    context.logger.error(e);
   }
 })();
 

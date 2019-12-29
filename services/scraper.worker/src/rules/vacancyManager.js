@@ -1,12 +1,8 @@
 'use strict';
 
-const gt = require('google-translate')('', {});
+const gt = require('google-translate')(process.env.COMPONENT_PARAM_TRANSLATE_API_KEY, {});
 const baseRule = require('./baseRule');
 
-/*
-db.docs.aggregate({$group: {_id: '$location', count: {$sum : 1}}})
-db.test.aggregate([{$unwind: '$location'}, {$group: { _id: '$location', tags: {$sum: 1}} }, {$sort: { tags: -1 } }])
-*/
 class vacancyManager extends baseRule {
   constructor(context) {
     super(context);
@@ -14,11 +10,12 @@ class vacancyManager extends baseRule {
   }
 
   async add(companyDesc, vacancyDesc) {
+    /*
     // process master company
     const masterCompanyKey = companyDesc.masterKey;
     const masterCompanyHash = this.context.utils.md5(masterCompanyKey);
     if (!await this.context.db.findCompanyByHash(masterCompanyHash)) {
-      // ccreate master company
+      // create master company
       const masterCompany = this.context.entities.createCompany(this.context.clone('logger', 'utils'),
         {
           key: masterCompanyKey,
@@ -49,6 +46,7 @@ class vacancyManager extends baseRule {
     } else {
       // this.context.logger.info('Skip');
     }
+    */
     // process vacancy
     const vacancy = this.context.entities.createVacancy(this.context.clone('logger', 'utils'), vacancyDesc);
     const vHash = this.context.utils.md5(vacancy.getUrl());
@@ -57,13 +55,13 @@ class vacancyManager extends baseRule {
         id: this.context.utils.getUuid(),
         hash: vHash,
         url: vacancy.getUrl(),
-        company: cHash,
+        companyKey: companyDesc.masterKey,
+        companyDomain: companyDesc.domain,
         date: new Date(vacancy.getDate()),
         title: vacancy.getTitle(),
         text: vacancy.getText(),
         location: await this.translate(vacancy.getLocation()),
-        salary: vacancy.getSalary(),
-        links: {parent: {scope: 'contacts', hash: cHash}, origin: {scope: 'contacts', hash: masterCompanyHash}}
+        salary: vacancy.getSalary()
       });
     } else {
       // this.context.logger.info('Skip');

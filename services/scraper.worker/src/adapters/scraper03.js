@@ -45,7 +45,7 @@ class scraper03 extends baseScraper {
       vacancy: {
         url: vacancyUrl,
         date: m.format('YYYY-MM-DD'),
-        location: location,
+        location: [location],
         salary: salary,
         title: $(node).find('#h1-name').text(),
         text: $(node).find('#job-description').text().trim()

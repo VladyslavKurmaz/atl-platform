@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-  createVacancyManager: require('./vacancyManager').builder()
+  createVacancyManager: require('./vacancyManager').builder(),
+  createReportManager: require('./reportManager').builder()
 }

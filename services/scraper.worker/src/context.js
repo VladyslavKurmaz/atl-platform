@@ -18,6 +18,14 @@ class context {
     }
     return new context(p);
   }
+
+  duplicate() {
+    let names = [];
+    for (var name in this) {
+      names.push(name);
+    }
+    return this.clone.apply(this, names);
+  }
 }
 
 module.exports.create = (items) => {
