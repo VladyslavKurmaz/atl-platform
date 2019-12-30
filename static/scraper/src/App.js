@@ -11,7 +11,7 @@ document.body.classList.add('container-fluid', 'p-0', 'h-100');
 function App() {
   return (
     <div className="App d-flex flex-column h-100">
-      <Navbar hostUrl="." titleShort="MVTs - React" titleLong="Minimum Viable Templates - React"/>
+      <Navbar hostUrl="." titleShort="Whale alert" titleLong="Whale alert"/>
       <Switch>
         <Route exact path='/' component={Home} />
         <Route exact path='/home' component={Home} />
