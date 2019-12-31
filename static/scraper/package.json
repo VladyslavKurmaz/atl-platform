@@ -1,21 +1,24 @@
 {
-  "name": "org.talan.react",
+  "name": "io.attlas.static.scraper",
   "version": "19.12.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.8.0",
     "@material-ui/icons": "^4.5.1",
     "bootstrap": "^4.4.1",
-    "chroma-js": "^2.1.0",
-    "d3": "^5.15.0",
-    "d3-sankey": "^0.12.3",
+    "cities.json": "^1.1.5",
     "leaflet": "^1.6.0",
+    "leaflet.markercluster": "^1.4.1",
+    "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
+    "react-google-charts": "^3.0.15",
     "react-leaflet": "^2.6.1",
+    "react-leaflet-markercluster": "^2.0.0-rc3",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.3.0"
+    "react-scripts": "^3.3.0",
+    "string-similarity": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
