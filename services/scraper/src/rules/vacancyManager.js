@@ -10,62 +10,39 @@ class vacancyManager extends baseRule {
   }
 
   async add(companyDesc, vacancyDesc) {
-    /*
-    // process master company
-    const masterCompanyKey = companyDesc.masterKey;
-    const masterCompanyHash = this.context.utils.md5(masterCompanyKey);
-    if (!await this.context.db.findCompanyByHash(masterCompanyHash)) {
-      // create master company
-      const masterCompany = this.context.entities.createCompany(this.context.clone('logger', 'utils'),
-        {
-          key: masterCompanyKey,
-          url: companyDesc.domain,
-          name: masterCompanyKey
-        });
-      await this.context.db.insertCompany({
-        id: this.context.utils.getUuid(),
-        hash: masterCompanyHash,
-        key: masterCompany.getKey(),
-        url: masterCompany.getUrl(),
-        name: masterCompany.getName(),
-        links: {}
-      });
-    }
-    // process company projection
-    const company = this.context.entities.createCompany(this.context.clone('logger', 'utils'), companyDesc);
-    const cHash = this.context.utils.md5(company.getUrl());
-    if (!await this.context.db.findCompanyByHash(cHash)) {
-      await this.context.db.insertCompany({
-        id: this.context.utils.getUuid(),
-        hash: cHash,
-        key: company.getKey(),
-        url: company.getUrl(),
-        name: company.getName(),
-        links: {parent: {scope: 'contacts', hash: masterCompanyHash}}
-      });
-    } else {
-      // this.context.logger.info('Skip');
-    }
-    */
+    let result = [];
     // process vacancy
     const vacancy = this.context.entities.createVacancy(this.context.clone('logger', 'utils'), vacancyDesc);
-    const vHash = this.context.utils.md5(vacancy.getUrl());
-    if (!await this.context.db.findVacancyByHash(vHash)) {
-      await this.context.db.insertVacancy({
-        id: this.context.utils.getUuid(),
-        hash: vHash,
-        url: vacancy.getUrl(),
-        companyKey: companyDesc.masterKey,
-        companyDomain: companyDesc.domain,
-        date: new Date(vacancy.getDate()),
-        title: vacancy.getTitle(),
-        text: vacancy.getText(),
-        location: await this.translate(vacancy.getLocation()),
-        salary: vacancy.getSalary()
-      });
-    } else {
-      // this.context.logger.info('Skip');
+    // translate location and apply mapping if needed
+    let locations = await this.getMappings(await this.translate(vacancy.getLocations()), false);
+    // confirm that location exists
+    const {failed, missedLocations} = await this.validateLocations(locations);
+    if (failed) {
+      result.push({key: missedLocations, details: vacancy.getUrl()});
     }
+    // check mapping for company
+    const companyName = await this.getMappings([companyDesc.key], true);
+    if (!companyName.length) {
+      result.push({key: companyDesc.key, details: companyDesc.url, from:companyDesc.key, to: companyDesc.name});
+    }
+
+    if (result.length === 0) { // all mappings are fine
+      const vHash = this.context.utils.md5(vacancy.getUrl());
+      if (!await this.context.db.findVacancyByHash(vHash)) {
+        await this.context.db.insertVacancy({
+          id: this.context.utils.getUuid(),
+          hash: vHash,
+          url: vacancy.getUrl(),
+          company: companyName[0],
+          date: new Date(vacancy.getDate()),
+          title: vacancy.getTitle(),
+          text: vacancy.getText(),
+          locations: locations,
+          salary: vacancy.getSalary()
+        });
+      }
+    }
+    return result;
   }
   async doTranslate(word) {
     return new Promise( (resolve, reject) => {
@@ -106,6 +83,28 @@ class vacancyManager extends baseRule {
     }
     return r;
   }
+
+  async getMappings(mappings, strict) {
+    let result = [];
+    for (const m of mappings) {
+      const nm = await this.context.db.getMapping(m);
+      if (nm || !strict) {
+        result.push(nm?nm:m);
+      }
+    }
+    return result;
+  }
+
+  async validateLocations(locations) {
+    let result = [];
+    for (const l of locations) {
+      if (!await this.context.db.validateLocation(l) ) {
+        result.push(l);
+      }
+    }
+    return {failed : (result.length !== 0), missedLocations: result};
+  }
+
 }
 
 module.exports.builder = () => (context) => {

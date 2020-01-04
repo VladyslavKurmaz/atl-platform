@@ -63,7 +63,7 @@ class reportManager extends baseRule {
     // Calculate report
     this.context.logger.info('Calculating report [' + start.format() + ' - ' + end.format() + ']');
     console.log(await this.context.db.calculateAggregateReport(
-      [{$unwind: '$location'}, {$group: { _id: '$location', tags: {$sum: 1}} }, {$sort: { tags: -1 } }]
+      [{$unwind: '$locations'}, {$group: { _id: '$locations', tags: {$sum: 1}} }, {$sort: { tags: -1 } }]
     ));
 
   }

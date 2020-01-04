@@ -46,6 +46,17 @@ export default class Home extends React.Component<{}, State> {
   render() {
     const position = [this.state.lat, this.state.lng];
     const byLocations = [
+      { key: 'Kyiv', tags: 355 },
+      { key: 'Kharkiv', tags: 94 },
+      { key: 'Lviv', tags: 80 },
+      { key: 'Remotely', tags: 72 },
+      { key: 'Odessa', tags: 37 },
+      { key: 'Dnipro', tags: 30 },
+      { key: 'Vinnytsia', tags: 13 },
+      { key: 'Zaporizhia', tags: 10 },
+      { key: 'Mykolayiv', tags: 7 },
+      { key: 'Kraków', tags: 5 },
+      { key: 'Uzhgorod', tags: 5 },
       { key: 'Khmelnytskyi', tags: 5 },
       { key: 'Zhytomyr', tags: 4 },
       { key: 'Chernivtsi', tags: 3 },
@@ -103,7 +114,7 @@ export default class Home extends React.Component<{}, State> {
 
 
     const report = {
-      date: '2019-12-29',
+      date: '2020-01-05',
       graphs: [
         {
           type: 'map',
@@ -227,7 +238,7 @@ export default class Home extends React.Component<{}, State> {
               </Link>
             </div>
             <div className="col">
-              <p className="h6">2019-12-29</p>
+              <p className="h6">{report.date}</p>
               {/*<button onClick={ (e) => {
                 html2canvas(document.body).then(function(canvas) {
                   document.body.appendChild(canvas);

@@ -14,6 +14,7 @@ class baseScraper extends baseItem {
     this.config = config;
     this.name = name;
     this.baseUrl = baseUrl;
+    this.issues = [];
     this.vacancyManager = this.context.rules.createVacancyManager(this.context.clone('logger', 'utils', 'db', 'entities'));
   }
 
@@ -78,14 +79,19 @@ class baseScraper extends baseItem {
                 this.context.logger.error(this.name, e);
               });
             }
+            let issues = [];
             if (vacancy && company) {
-              await this.vacancyManager.add(company, vacancy);
+              issues = await this.vacancyManager.add(company, vacancy);
             }
+            this.issues.push(...issues);
           }
         }).catch(e => {
           this.context.logger.error(this.name, e);
         });
     }
+    // save issues
+    await this.context.db.saveIssues(this.issues);
+    this.issues = [];
   }
   getInterface() {
     return Object.freeze({
@@ -107,8 +113,8 @@ const keywords = [
   'c++',
   'android',
   'qa',
-  'front end',
-  'back end',
+  'frontend',
+  'backend',
   'project manager',
   'golang',
   'scala',

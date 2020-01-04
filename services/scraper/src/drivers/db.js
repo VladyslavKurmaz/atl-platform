@@ -8,10 +8,12 @@ class db extends baseItem {
     super(context);
     this.client = null;
     this.dbo = null;
-    this.companiesCollection = 'contacts';
     this.vacanciesCollection = 'docs.vacancies';
     this.translationsCollection = 'docs.translations';
     this.reportsCollection = 'docs.reports';
+    this.locationsCollection = 'docs.cities';
+    this.mappingsCollection = 'docs.mappings';
+    this.issuesCollection = 'docs.issues';
   }
 
   async connect(host, port, user, pass, dbName) {
@@ -23,20 +25,6 @@ class db extends baseItem {
     }
     this.dbo = this.client.db(dbName);
     return true;
-  }
-
-  async insertCompany(company) {
-    await this.dbo.collection(this.companiesCollection).insertOne(company);
-  }
-
-  async findCompanyByHash(hash) {
-    const result = await this.dbo.collection(this.companiesCollection).find({ hash: hash });
-    const found = await result.toArray();
-    if (found.length !== 0) {
-      const { _id: id, ...insertedInfo } = found[0];
-      return { id, ...insertedInfo }
-    }
-    return null;
   }
 
   async insertVacancy(vacancy) {
@@ -53,8 +41,8 @@ class db extends baseItem {
     return null;
   }
 
-  async findTranslation(word) {
-    const result = await this.dbo.collection(this.translationsCollection).find({ from: word });
+  async resolveTerm(collection, term) {
+    const result = await this.dbo.collection(collection).find({from: term});
     const found = await result.toArray();
     if (found.length !== 0) {
       return found[0].to;
@@ -62,14 +50,34 @@ class db extends baseItem {
     return null;
   }
 
+  async findTranslation(word) {
+    return await this.resolveTerm(this.translationsCollection, word);
+  }
+
   async addTranslation(from, to) {
-    const result = await this.dbo.collection(this.translationsCollection).insertOne({from: from, to: to});
+    await this.dbo.collection(this.translationsCollection).insertOne({from: from, to: to});
   }
 
   async calculateAggregateReport(query) {
-    const result = this.dbo.collection(this.vacanciesCollection).aggregate(query);
+    const result = await this.dbo.collection(this.vacanciesCollection).aggregate(query);
     const found = await result.toArray();
     return found;
+  }
+
+  async saveIssues(issues) {
+    if (issues.length) {
+      this.dbo.collection(this.issuesCollection).insertMany(issues);
+    }
+  }
+
+  async validateLocation(location) {
+    const result = await this.dbo.collection(this.locationsCollection).find({name: location});
+    const found = await result.toArray();
+    return (found.length > 0);
+  }
+
+  async getMapping(mapping) {
+    return await this.resolveTerm(this.mappingsCollection, mapping);
   }
 }
 
@@ -77,13 +85,14 @@ module.exports.builder = () => (context) => {
   const scraperDb = new db(context);
   return Object.freeze({
     connect: async (host, port, user, pass, dbName) => await scraperDb.connect(host, port, user, pass, dbName),
-    insertCompany: async (company) => await scraperDb.insertCompany(company),
-    findCompanyByHash: async (company) => await scraperDb.findCompanyByHash(company),
     insertVacancy: async (vacancy) => await scraperDb.insertVacancy(vacancy),
     findVacancyByHash: async (vacancy) => await scraperDb.findVacancyByHash(vacancy),
     findTranslation: async (word) => await scraperDb.findTranslation(word),
     addTranslation: async (from, to) => await scraperDb.addTranslation(from, to),
-    calculateAggregateReport: async (query) => await scraperDb.calculateAggregateReport(query)
+    calculateAggregateReport: async (query) => await scraperDb.calculateAggregateReport(query),
+    saveIssues: async(issues) => await scraperDb.saveIssues(issues),
+    validateLocation: async(location) => await scraperDb.validateLocation(location),
+    getMapping: async(mapping) => await scraperDb.getMapping(mapping)
   });
 }
 

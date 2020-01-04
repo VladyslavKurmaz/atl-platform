@@ -36,7 +36,7 @@ class scraper01 extends baseScraper {
       vacancy: {
         url: vacancyUrl,
         date: m.format('YYYY-MM-DD'),
-        location: location.split(',').map(e => e.trim().split(' ')[0].trim()),
+        locations: location.split(',').map(e => e.trim().split(' ')[0].trim()),
         salary: $(vnode).find('.l-vacancy .salary').text().trim(),
         title: $(vnode).find('.g-h2').text(),
         text: $(vnode).find('.l-vacancy .vacancy-section').text()
@@ -47,11 +47,9 @@ class scraper01 extends baseScraper {
   parseCompany($, companyUrl) {
     const vnode = $('.company-info');
     const name = $(vnode).find('h1').text().trim();
-    const masterKey = name.split('/')[0].trim().toLowerCase();
     return {
       url: companyUrl,
       key: url.parse(companyUrl).pathname.split('/')[2],
-      masterKey: masterKey,
       name: name,
       domain: $(vnode).find('.site').text().trim()
     }

@@ -15,7 +15,7 @@ module.exports.builder = () => (
     date,
     title,
     text,
-    location,
+    locations,
     salary
   }
   ) => {
@@ -32,7 +32,7 @@ module.exports.builder = () => (
   if (!context.utils.validator.isValidText(text)) {
     throw new Error('Text must include at least one character of text.')
   }
-  if (!context.utils.validator.isValidLocation(location)) {
+  if (!context.utils.validator.isValidLocations(locations)) {
     throw new Error('Text must be defined.')
   }
   if (!context.utils.validator.isValidCurrency(salary)) {
@@ -43,7 +43,7 @@ module.exports.builder = () => (
     getDate: () => date,
     getTitle: () => title,
     getText: () => text,
-    getLocation: () => location,
+    getLocations: () => locations,
     getSalary: () => salary
   });
 }

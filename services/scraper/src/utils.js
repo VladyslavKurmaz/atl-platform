@@ -39,7 +39,7 @@ module.exports = {
     isValidText: (text) => {
       return (text && text.length > 0);
     },
-    isValidLocation: (location) => {
+    isValidLocations: (locations) => {
       return true;
     },
     isValidCurrency: (salary) => {

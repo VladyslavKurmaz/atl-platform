@@ -11,7 +11,7 @@ const config = {
         },
         subLoop: {
           //middle: 5 * 60 * 1000, // every 5 minutes
-          middle: 10 * 1000, // every 10 seconds
+          middle: 10 * 500, // every 10 seconds
           deviation: 20
         }
       }
