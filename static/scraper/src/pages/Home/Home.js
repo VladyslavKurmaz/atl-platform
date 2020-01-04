@@ -46,38 +46,29 @@ export default class Home extends React.Component<{}, State> {
   render() {
     const position = [this.state.lat, this.state.lng];
     const byLocations = [
-      { key: "Kyiv", "tags" : 339 },
-      { key: "Kharkiv", "tags" : 81 },
-      { key: "Lviv", "tags" : 75 },
-      { key: "Odessa", "tags" : 30 },
-      { key: "Dnieper", "tags" : 25 },
-      { key: "Vinnitsa", "tags" : 18 },
-      { key: "Zaporizhzhia", "tags" : 7 },
-      { key: "Khmelnitsky", "tags" : 4 },
-      { key: "Nikolaev", "tags" : 4 },
-      { key: "Chernivtsi", "tags" : 3 },
-      { key: "Minsk", "tags" : 3 },
-      { key: "Ivano-Frankivsk", "tags" : 2 },
-      { key: "Berlin", "tags" : 2 },
-      { key: "Rivne", "tags" : 2 },
-      { key: "Sumy", "tags" : 2 },
-      { key: "Krakow", "tags" : 2 },
-      { key: "Cherkasy", "tags" : 2 },
-      { key: "Prague", "tags" : 1 },
-      { key: "Playful", "tags" : 1 },
-      { key: "Sydney", "tags" : 1 },
-      { key: "Stockholm", "tags" : 1 },
-      { key: "Kramatorsk", "tags" : 1 },
-      { key: "Uzhhorod", "tags" : 1 },
-      { key: "Kherson", "tags" : 1 },
-      { key: "Poznan", "tags" : 1 },
-      { key: "St. Petersburg", "tags" : 1 },
-      { key: "San Ramon", "tags" : 1 },
-      { key: "Vancouver", "tags" : 1 },
-      { key: "Vilnius", "tags" : 1 },
-      { key: "Bratislava", "tags" : 1 },
-      { key: "Zhytomyr", "tags" : 1 },
-      { key: "Poltava", "tags" : 1 }
+      { key: 'Khmelnytskyi', tags: 5 },
+      { key: 'Zhytomyr', tags: 4 },
+      { key: 'Chernivtsi', tags: 3 },
+      { key: 'Ivano-Frankivsk', tags: 3 },
+      { key: 'Rivne', tags: 2 },
+      { key: 'Sumy', tags: 2 },
+      { key: 'Lutsk', tags: 2 },
+      { key: 'Poltava', tags: 2 },
+      { key: 'Prague', tags: 1 },
+      { key: 'Chernihiv', tags: 1 },
+      { key: 'Sydney', tags: 1 },
+      { key: 'Ternopil', tags: 1 },
+      { key: 'Stockholm', tags: 1 },
+      { key: 'Kherson', tags: 1 },
+      { key: 'St. Petersburg', tags: 1 },
+      { key: 'Vancouver', tags: 1 },
+      { key: 'Mariupol', tags: 1 },
+      { key: 'San Francisco', tags: 1 },
+      { key: 'Palo Alto', tags: 1 },
+      { key: 'Poznań', tags: 1 },
+      { key: 'Bratislava', tags: 1 },
+      { key: 'Brovary', tags: 1 },
+      { key: 'Cherkasy', tags: 1 }
     ];
     const names = cities.map(e => e.name);
     let positions = []
@@ -254,7 +245,7 @@ export default class Home extends React.Component<{}, State> {
               <div className="container-fluid">
                 <div className="row">
                   {report.graphs.map((r, i) => 
-                    <div key={i.toString()} className="col-sm-12 col-md-6 p-4 border">
+                    <div key={i.toString()} className="col-sm-12 col-md-6 p-4 border1">
                       <p className="h6 pb-2">{r.title}<span className="badge badge-secondary float-right">{report.date}</span></p>
                       {r.type === 'map' &&
                         <Map center={position} zoom={this.state.zoom} maxZoom={7} style={{height:'384px'}}>
