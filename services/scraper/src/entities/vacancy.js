@@ -16,7 +16,10 @@ module.exports.builder = () => (
     title,
     text,
     locations,
-    salary
+    salary,
+    roles,
+    seniority,
+    specializations
   }
   ) => {
   // validate input
@@ -44,6 +47,11 @@ module.exports.builder = () => (
     getTitle: () => title,
     getText: () => text,
     getLocations: () => locations,
-    getSalary: () => salary
+    getSalary: () => salary,
+    getRoles: () => roles,
+    getSeniority: () => seniority,
+    getSpecializations: () => specializations
+
+
   });
 }

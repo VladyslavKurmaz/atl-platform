@@ -14,6 +14,8 @@ import SankeyChart from "./../../components/SankeyChart/SankeyChart";
 import 'react-leaflet-markercluster/dist/styles.min.css';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 
+import reportData from './../../data/report.json';
+
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -113,7 +115,9 @@ export default class Home extends React.Component<{}, State> {
 
 
 
-    const report = {
+    const report = reportData;
+/*
+ {
       date: '2020-01-05',
       graphs: [
         {
@@ -227,6 +231,7 @@ export default class Home extends React.Component<{}, State> {
         }
       ]
     }
+  */
 
     return (
 
@@ -238,7 +243,7 @@ export default class Home extends React.Component<{}, State> {
               </Link>
             </div>
             <div className="col">
-              <p className="h6">{report.date}</p>
+              <p className="h6">{report.title}</p>
               {/*<button onClick={ (e) => {
                 html2canvas(document.body).then(function(canvas) {
                   document.body.appendChild(canvas);
@@ -256,10 +261,10 @@ export default class Home extends React.Component<{}, State> {
               <div className="container-fluid">
                 <div className="row">
                   {report.graphs.map((r, i) => 
-                    <div key={i.toString()} className="col-sm-12 col-md-6 p-4 border1">
-                      <p className="h6 pb-2">{r.title}<span className="badge badge-secondary float-right">{report.date}</span></p>
+                    <div key={i.toString()} className="col-sm-12 col-md-6 p-4 border">
+                      <p className="h6 pb-2">{r.title}<span className="badge badge-secondary float-right">{report.title}</span></p>
                       {r.type === 'map' &&
-                        <Map center={position} zoom={this.state.zoom} maxZoom={7} style={{height:'384px'}}>
+                        <Map center={position} zoom={this.state.zoom} maxZoom={7} style={{height:'448px'}}>
                           <TileLayer
                             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
@@ -271,7 +276,7 @@ export default class Home extends React.Component<{}, State> {
                         </Map>
                       }
                       {r.type === 'sankey' && 
-                        <SankeyChart height={'384px'} data={r.data}/>
+                        <SankeyChart height={'448px'} data={r.data}/>
                       }
                     </div>
                   )}

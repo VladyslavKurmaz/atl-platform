@@ -30,7 +30,7 @@ class service extends baseItem {
     // run scrapers
     const cntx = this.context.clone('logger', 'utils', 'db', 'rules', 'entities');
     const scrapers = [
-      /*this.context.adapters.createScraper01(cntx.duplicate(), config.scrapers.actor01),
+      /*this.context.adapters.createScraper01(cntx.duplicate(), config.scrapers.actor01)/*,
       this.context.adapters.createScraper02(cntx.duplicate(), config.scrapers.actor01),
       this.context.adapters.createScraper03(cntx.duplicate(), config.scrapers.actor01)*/
     ]
