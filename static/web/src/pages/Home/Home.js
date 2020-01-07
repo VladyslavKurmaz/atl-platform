@@ -21,7 +21,7 @@ export default class Home extends React.Component {
           </div>
           <div className="row">
             {[sonarLogo, jenkinsLogo, dockerLogo, nginxLogo].map((l, li) => 
-              <div key={li.toString()} className={ ((li==0)?'offset-sm-2':'') + " col-sm-2"}>
+              <div key={li.toString()} className={ ((li === 0)?'offset-sm-2':'') + " col-sm-2"}>
                 <img className="Tool__logo" src={l} alt=""></img>
               </div>
             )}
