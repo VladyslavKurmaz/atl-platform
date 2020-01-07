@@ -27,6 +27,6 @@
   {
     "prefix": "static/web",
     "origin": "https://github.com/project-talan/tln-react.git",
-    "ref": "master"
+    "ref": "v20.1.0"
   }
 ]
