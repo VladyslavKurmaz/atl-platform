@@ -23,5 +23,10 @@
     "prefix": "static/scraper",
     "origin": "https://github.com/project-talan/tln-react.git",
     "ref": "master"
+  },
+  {
+    "prefix": "static/web",
+    "origin": "https://github.com/project-talan/tln-react.git",
+    "ref": "v20.1.0"
   }
 ]

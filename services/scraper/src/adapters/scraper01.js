@@ -27,16 +27,24 @@ class scraper01 extends baseScraper {
 
   parseVacancy($, vacancyUrl) {
     const vnode = $('.b-vacancy');
-    const companyUrl = $(vnode).find('.b-compinfo > a').attr().href;
+    const companyUrl = $(vnode).find('.b-compinfo > .info > .l-n > a').attr().href;
     const dateStr = $(vnode).find('.date').text();
     const m = moment(dateStr, 'DD MMMM YYYY', 'ru');
     const location = ($(vnode).find('.l-vacancy .place').text().trim());
+    const locations = location.split(',').map(e => {
+      const s = e.trim();
+      const pos = s.indexOf('(');
+      if (pos !== -1) {
+        return s.substring(0, pos).trim();
+      }
+      return s;
+    });
     return {
       companyUrl: companyUrl,
       vacancy: {
         url: vacancyUrl,
         date: m.format('YYYY-MM-DD'),
-        locations: location.split(',').map(e => e.trim().split(' ')[0].trim()),
+        locations: locations,
         salary: $(vnode).find('.l-vacancy .salary').text().trim(),
         title: $(vnode).find('.g-h2').text(),
         text: $(vnode).find('.l-vacancy .vacancy-section').text()
