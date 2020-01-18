@@ -76,6 +76,7 @@ class reportManager extends baseRule {
     //
     const match = {$match: {'date': { '$gte' : new Date(start.format()), '$lte' : new Date(end.format())}}};
     const positions = [];
+    let totalVacancies = 0;
     (await this.context.db.calculateAggregateReport(
       [
         match,
@@ -83,12 +84,14 @@ class reportManager extends baseRule {
         {$sort: { cnt: -1 } }
       ]
     )).
-    filter(e => e.cnt > 1).
     map( e => {
       for( let c = 0; c < cities.length; c++ ) {
         if (e._id === cities[c].name) {
-          for (let cnt = 0; cnt < e.cnt; cnt++) {
-            positions.push([cities[c].lat, cities[c].lng]);
+          totalVacancies += e.cnt;
+          if (e.cnt > 2) {
+            for (let cnt = 0; cnt < e.cnt; cnt++) {
+              positions.push([cities[c].lat, cities[c].lng]);
+            }
           }
           break;
         }
@@ -103,14 +106,14 @@ class reportManager extends baseRule {
     report.graphs.push(
       {
         type: 'map',
-        title: 'Number of vacancies per city',
+        title: `Distribution of vacancies (${totalVacancies})`,
         data: positions
       }
     );
     report.graphs.push(...[
         {
           type: 'sankey',
-          title: 'Vacancy per city per company',
+          title: 'Vacancies per city and company',
           data: await this.getSankeyReport(
             [
               match,
@@ -120,8 +123,8 @@ class reportManager extends baseRule {
             ],
             'location',
             'company',
-            'Other companies',
-            reporThreshold
+            reporThreshold + 1,
+            'Other companies'
           )
         },
         {
@@ -136,8 +139,8 @@ class reportManager extends baseRule {
             ],
             'specialization',
             'company',
-            'Other companies',
-            2
+            reporThreshold,
+            'Other companies'
           )
         },
         {
@@ -153,8 +156,8 @@ class reportManager extends baseRule {
             ],
             'specialization',
             'location',
-            'Other locations',
-            2
+            reporThreshold,
+            'Other locations'
           )       
         },
         {
@@ -169,8 +172,8 @@ class reportManager extends baseRule {
             ],
             'seniority',
             'company',
-            'Other companies',
-            reporThreshold
+            reporThreshold + 1,
+            'Other companies'
           )
         },
         {
@@ -186,8 +189,8 @@ class reportManager extends baseRule {
             ],
             'seniority',
             'location',
-            'Other locations',
-            reporThreshold
+            reporThreshold,
+            'Other locations'
           )
         },
         {
@@ -202,8 +205,8 @@ class reportManager extends baseRule {
             ],
             'role',
             'company',
-            'Other companies',
-            reporThreshold
+            reporThreshold + 1,
+            'Other companies'
           )
         },
         {
@@ -219,8 +222,8 @@ class reportManager extends baseRule {
             ],
             'role',
             'location',
-            'Other locations',
-            reporThreshold
+            reporThreshold,
+            'Other locations'
           )
         }
       ]
@@ -231,22 +234,30 @@ class reportManager extends baseRule {
     this.context.logger.info('Calculating report is done');
   }
 
-  async getSankeyReport(query, from, to, defValue, threshold) {
-    const data = [
-      ['From', 'To', 'Weight']
-    ];
+  async getSankeyReport(query, from, to, threshold, defValueTo, defValueFrom = null) {
+    const data = [];
     const rawData = await this.context.db.calculateAggregateReport(query);
-    for( let i = 0; i < rawData.length; i++) {
+    for(let i = 0; i < rawData.length; i++) {
       if (rawData[i].cnt >= threshold) {
         data.push([rawData[i]._id[from], rawData[i]._id[to], rawData[i].cnt]);
       } else {
-        if (defValue) {
-          data.push([rawData[i]._id[from], defValue, rawData[i].cnt]);
+        if (defValueTo) {
+          data.push([defValueFrom?defValueFrom:rawData[i]._id[from], defValueTo, rawData[i].cnt]);
         }
       }
 
     }
-    return data;
+    // normilize data
+    const normData = [];
+    for(let i = 0; i < data.length; i++) {
+      const item = normData.find( e => (data[i][0] === e[0] && data[i][1] === e[1]) );
+      if (item) {
+        item[2] += data[i][2];
+      } else {
+        normData.push(data[i]);
+      }
+    }
+    return [['From', 'To', 'Weight']].concat(normData);
   }
 }
 

@@ -27,7 +27,7 @@ class scraper01 extends baseScraper {
 
   parseVacancy($, vacancyUrl) {
     const vnode = $('.b-vacancy');
-    const companyUrl = $(vnode).find('.b-compinfo > a').attr().href;
+    const companyUrl = $(vnode).find('.b-compinfo > .info > .l-n > a').attr().href;
     const dateStr = $(vnode).find('.date').text();
     const m = moment(dateStr, 'DD MMMM YYYY', 'ru');
     const location = ($(vnode).find('.l-vacancy .place').text().trim());

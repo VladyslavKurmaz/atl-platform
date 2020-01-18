@@ -4,6 +4,8 @@ const request = require('request');
 const shuffle = require('fisher-yates');
 const delay = require('delay');
 const cheerio = require('cheerio');
+const moment = require('moment');
+
 
 const baseItem = require('../baseItem');
 const utils = require('../utils');
@@ -44,6 +46,7 @@ class baseScraper extends baseItem {
     let i = 0;
     const kws = shuffle(keywords/*.slice(0, 1)*/);
     const kwsCount = kws.length;
+    const startTime = moment();
     for (const kw of kws) {
       i++;
       await this.doRequest(this.getSearchUrl(kw)).
@@ -92,6 +95,13 @@ class baseScraper extends baseItem {
     // save issues
     await this.context.db.saveIssues(this.issues);
     this.issues = [];
+    // Report execution time
+    const d = moment.duration(moment().diff(startTime));
+    const days = d.days();
+    const hours = d.hours();
+    const minutes = d.minutes();
+    const seconds = d.seconds();
+    this.context.logger.info(`${this.name} full run took ${days}:${hours}:${minutes}:${seconds}`);
   }
   getInterface() {
     return Object.freeze({
