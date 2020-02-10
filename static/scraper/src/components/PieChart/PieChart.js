@@ -35,19 +35,12 @@ export default class SankeyChart extends React.Component {
     return (
       <Chart
         height={this.props.height}
-        chartType="Sankey"
+        chartType="PieChart"
         loader={<div>Loading Chart</div>}
         data={this.props.data}
         options = {{
-          sankey: {
-            node: {
-              colors: colors
-            },
-            link: {
-              colorMode: 'gradient',
-              colors: colors
-            }
-          }
+          colors: colors,
+          chartArea:{left:20,top:20,width:'100%',height:'100%'}
         }}
         rootProps={{ 'data-testid': '1' }}
       />
