@@ -57,7 +57,9 @@ class reportManager extends baseRule {
   async calculateWeeklyReport() {
     const s = moment().startOf('isoWeek');
     const e = moment().endOf('isoWeek');
-    const threshold = 3
+    //const s = moment('2020-03-02', 'YYYY-MM-DD');
+    //const e = moment('2020-03-08', 'YYYY-MM-DD');
+    const threshold = 3;
     await this.calculate( s, e, e.format('YYYY-MM-DD'),
       [
         { id: "count2location", threshold: threshold },
@@ -73,10 +75,10 @@ class reportManager extends baseRule {
   }
 
   async calculateMonthlyReport() {
-    const m = moment("2020-01-15");
+    const m = moment("2020-02-15");
     const s = moment(m).startOf('month');
     const e = moment(m).endOf('month');
-    const threshold = 20;
+    const threshold = 8;
     await this.calculate(s, e, e.format('YYYY MMMM'),
       [
         { id: "count2location", threshold: threshold },
@@ -130,7 +132,7 @@ class reportManager extends baseRule {
           for( let c = 0; c < cities.length; c++ ) {
             if (e._id === cities[c].name) {
               totalVacancies += e.cnt;
-              if (e.cnt > 2) {
+              if (e.cnt > 1) {
                 for (let cnt = 0; cnt < e.cnt; cnt++) {
                   positions.push([cities[c].lat, cities[c].lng]);
                 }

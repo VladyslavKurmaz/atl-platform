@@ -20,7 +20,7 @@ class service extends baseItem {
     // run scrapers
     const cntx = this.context.clone('logger', 'utils', 'db', 'rules', 'entities');
     const scrapers = [
-      /*this.context.adapters.createScraper01(cntx.duplicate(), config.scrapers.actor01.config)/*,
+      this.context.adapters.createScraper01(cntx.duplicate(), config.scrapers.actor01.config)/*,
       this.context.adapters.createScraper02(cntx.duplicate(), config.scrapers.actor01.config),
       this.context.adapters.createScraper03(cntx.duplicate(), config.scrapers.actor01.config)*/
     ]
@@ -36,7 +36,7 @@ class service extends baseItem {
     // run report engine
     const report = this.context.rules.createReportManager(cntx.duplicate());
     //await report.calculateMonthlyReport();
-    await report.calculateWeeklyReport();
+    //await report.calculateWeeklyReport();
     //
     this.jobs.push(
       schedule.scheduleJob(config.reports.weekly.scheduling, async () => {

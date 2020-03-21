@@ -5,8 +5,8 @@ const config = {
   scrapers: {
     actor01: {
       scheduling: {
-        hour: 16, //[0, 12],
-        minute: 43 //0
+        hour: 12, //[0, 12],
+        minute: 0 //0
       },
       config: {
         requestTimeout: {
