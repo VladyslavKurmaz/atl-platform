@@ -5,6 +5,7 @@ const moment = require('moment');
 const baseRule = require('./baseRule');
 const cities = require('cities.json');
 
+const queries = require('./queries');
 /*
 db.docs.vacancies.aggregate([{$unwind: '$location'}, {$group: { _id: '$location', tags: {$sum: 1}} }, {$sort: { tags: -1 } }])
 
@@ -52,6 +53,20 @@ class reportManager extends baseRule {
   constructor(context) {
     super(context);
     this.cache = [];
+  }
+
+  async calculateTestReport() {
+    const s = moment().startOf('isoWeek');
+    const e = moment().endOf('isoWeek');
+    const threshold = 3;
+    await this.calculate( s, e, e.format('YYYY-MM-DD'),
+      [
+        { id: "count2location", threshold: threshold },
+        { id: "spec2loc2company", threshold: threshold },
+        { id: "seniority2loc2company", threshold: threshold },
+        { id: "role2loc2company", threshold: threshold }
+      ]
+    );
   }
 
   async calculateWeeklyReport() {
@@ -115,7 +130,14 @@ class reportManager extends baseRule {
     };
     this.context.logger.info('Calculating report at ' + moment().format() + ' for [' + start.format() + ' - ' + end.format() + ']');
     //
-    const match = {$match: {'date': { '$gte' : new Date(start.format()), '$lte' : new Date(end.format())}}};
+    const match = {
+      $match: {
+        'date': {
+          '$gte' : new Date(start.format()),
+          '$lte' : new Date(end.format())
+        }
+      }
+    };
     //
     for (const r of reports) {
       if (r.id === "count2location") {
@@ -257,26 +279,13 @@ class reportManager extends baseRule {
           }
         );
       }
-      if (r.id === "specBylocation") {
-        report.graphs.push(
-          {
-            type: 'sankey',
-            title: 'Specialization distribution by location',
-            data: await this.getSankeyReport(
-              [
-                match,
-                { "$unwind": "$specializations" },
-                { "$unwind": "$locations" },
-                { "$group": { "_id": { "specialization": "$specializations", "location": "$locations" }, "cnt": { "$sum": 1.0 } } },
-                { "$sort": { "cnt": -1.0 } }
-              ],
-              'specialization',
-              'location',
-              r.threshold,
-              'Other locations'
-            )
-          }
-        );
+      if (r.id === "spec2loc") {
+        const q = queries.spec2loc;
+        report.graphs.push({
+          type: 'sankey',
+          title: q.title,
+          data: await this.getSankeyReport([match].concat(q.data), q.first, q.second, r.threshold, q.other)
+        });
       }
       if (r.id === "seniorityBycompany") {
         report.graphs.push(
@@ -360,13 +369,64 @@ class reportManager extends baseRule {
           }
         );
       }
+      //
+      if (r.id === "spec2loc2company") {
+        const q1 = queries.spec2loc2company1;
+        const q2 = queries.spec2loc2company2;
+        let data = await this.getSankeyReport([match].concat(q1.data), q1.first, q1.second, 1/*r.threshold*/, q1.other);
+        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 3/*r.threshold*/, q2.other, null, false));
+        report.graphs.push({
+          type: 'sankey',
+          title: 'Specialization > Location > Company',
+          data: data
+        });
+        /*
+        report.graphs.push(
+          {
+            type: 'sankey',
+            title: 'Specialization > Location > Company',
+            data: [['From', 'To', 'Weight']].concat([
+              ['C++', 'Kyiv', 10],
+              ['C++', 'Lviv', 5],
+              ['C++', 'Dnepr', 1],
+              ['Kyiv', 'Luxoft', 1],
+              ['Lviv', 'Luxoft', 1],
+              ['Dnepr', 'Epam', 1],
+            ])
+          }
+        );
+*/
+      }
+      if (r.id === "seniority2loc2company") {
+        const q1 = queries.seniority2loc2company1;
+        const q2 = queries.seniority2loc2company2;
+        let data = await this.getSankeyReport([match].concat(q1.data), q1.first, q1.second, 1/*r.threshold*/, q1.other);
+        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 3/*r.threshold*/, q2.other, null, false));
+        report.graphs.push({
+          type: 'sankey',
+          title: 'Seniority > Location > Company',
+          data: data
+        });
+      }
+      if (r.id === "role2loc2company") {
+        const q1 = queries.role2loc2company1;
+        const q2 = queries.role2loc2company2;
+        let data = await this.getSankeyReport([match].concat(q1.data), q1.first, q1.second, 1/*r.threshold*/, q1.other);
+        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 3/*r.threshold*/, q2.other, null, false));
+        report.graphs.push({
+          type: 'sankey',
+          title: 'Role > Location > Company',
+          data: data
+        });
+      }
+
     }
     //
     fs.writeFileSync('report.json', JSON.stringify(report), 'utf8');
     this.context.logger.info('Calculating report is done');
   }
 
-  async getSankeyReport(query, from, to, threshold, defValueTo, defValueFrom = null) {
+  async getSankeyReport(query, from, to, threshold, defValueTo, defValueFrom = null, header = true) {
     const data = [];
     const rawData = await this.context.db.calculateAggregateReport(query);
     for(let i = 0; i < rawData.length; i++) {
@@ -389,7 +449,10 @@ class reportManager extends baseRule {
         normData.push(data[i]);
       }
     }
-    return [['From', 'To', 'Weight']].concat(normData);
+    if (header ) {
+      return [['From', 'To', 'Weight']].concat(normData);
+    }
+    return normData;
   }
 
   async getBarReport(query, field, title, thresholdMin, thresholdMax, defTitle, showCount, showOther) {
@@ -415,6 +478,7 @@ module.exports.builder = () => (context) => {
   const manager = new reportManager(context);
   return Object.freeze({
     calculateWeeklyReport: async () => await manager.calculateWeeklyReport(),
-    calculateMonthlyReport: async () => await manager.calculateMonthlyReport()
+    calculateMonthlyReport: async () => await manager.calculateMonthlyReport(),
+    calculateTestReport: async () => await manager.calculateTestReport()
   });
 }

@@ -37,6 +37,7 @@ class service extends baseItem {
     const report = this.context.rules.createReportManager(cntx.duplicate());
     //await report.calculateMonthlyReport();
     //await report.calculateWeeklyReport();
+    //await report.calculateTestReport();
     //
     this.jobs.push(
       schedule.scheduleJob(config.reports.weekly.scheduling, async () => {
