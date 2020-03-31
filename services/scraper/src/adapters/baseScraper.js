@@ -20,13 +20,6 @@ class baseScraper extends baseItem {
     this.vacancyManager = this.context.rules.createVacancyManager(this.context.clone('logger', 'utils', 'db', 'entities'));
   }
 
-  getEntry() {
-    return {
-      timeout: this.config.timeouts.mainLoop,
-      execute: async () => await this.execute()
-    };
-  }
-
   async doRequest(url) {
     const req = request.defaults({
       headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36'}
@@ -58,7 +51,7 @@ class baseScraper extends baseItem {
           let j = 0;
           const count = items.length;
           for (const e of items) {
-            const tm = utils.getTimeout(this.config.timeouts.subLoop);
+            const tm = utils.getTimeout(this.config.requestTimeout);
             this.context.logger.info(`${this.name} will sleep for ${tm} before next request`);
             await delay(tm);
             //
@@ -103,10 +96,10 @@ class baseScraper extends baseItem {
     const seconds = d.seconds();
     this.context.logger.info(`${this.name} full run took ${days}:${hours}:${minutes}:${seconds}`);
   }
+
   getInterface() {
     return Object.freeze({
       getName: () => this.name,
-      getScanTimeout: () => utils.getTimeout(this.config.timeouts.mainLoop),
       execute: async () => await this.execute()
     });
   }

@@ -4,24 +4,32 @@
 const config = {
   scrapers: {
     actor01: {
-      timeouts: {
-        mainLoop: {
-          middle: 6 * 60 * 60 * 1000, // every 6 hours
+      scheduling: {
+        hour: 12, //[0, 12],
+        minute: 0 //0
+      },
+      config: {
+        requestTimeout: {
+          middle: 5 * 1000,
           deviation: 10
-        },
-        subLoop: {
-          //middle: 5 * 60 * 1000, // every 5 minutes
-          middle: 10 * 500, // every 10 seconds
-          deviation: 20
         }
       }
     }
   },
   reports: {
-    scheduling: {
-      hour: 23,
-      minute: 0,
-      dayOfWeek: 0
+    weekly: {
+      scheduling: {
+        hour: 23,
+        minute: 0,
+        dayOfWeek: 0
+      }
+    },
+    monthly: {
+      scheduling: {
+        date: 1,
+        hour: 23,
+        minute: 0
+      }
     }
   }
 };

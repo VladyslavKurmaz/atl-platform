@@ -1,0 +1,4 @@
+mongoexport --authenticationMechanism SCRAM-SHA-256  --username scraper --password "ckWhjg8ZVjMc58B6" --db scraper -c docs.issues --fields from,to --sort "{from: 1}"
+mongoexport --username scraper --password "ckWhjg8ZVjMc58B6" --db scraper -c docs.issues --fields from,to --sort "{from: 1}"
+mongoexport --uri="mongodb://scraper:ckWhjg8ZVjMc58B6@127.0.01/scraper" -c docs.issues --fields from,to --sort "{from: 1}" --out=issue.json
+

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route/*, Link, Redirect*/ } from 'react-router-dom';
+import { Switch, Route/*, Link, Redirect*/ } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer/Footer';
@@ -16,7 +16,7 @@ function App() {
         <Route exact path='/' component={Home} />
         <Route exact path='/home' component={Home} />
       </Switch>
-      <Footer version="v20.1.1"/>
+      <Footer version="v20.3.0"/>
     </div>
   );
 }
