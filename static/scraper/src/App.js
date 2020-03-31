@@ -16,7 +16,7 @@ function App() {
         <Route exact path='/' component={Home} />
         <Route exact path='/home' component={Home} />
       </Switch>
-      <Footer version="v19.12.0"/>
+      <Footer version="v20.1.1"/>
     </div>
   );
 }
