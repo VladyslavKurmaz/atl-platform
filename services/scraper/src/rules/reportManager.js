@@ -55,7 +55,7 @@ class reportManager extends baseRule {
     this.cache = [];
   }
 
-  async calculateTestReport() {
+  async calculateWeeklyReport() {
     const s = moment().startOf('isoWeek');
     const e = moment().endOf('isoWeek');
     const threshold = 3;
@@ -65,18 +65,7 @@ class reportManager extends baseRule {
         { id: "spec2loc2company", threshold: threshold },
         { id: "seniority2loc2company", threshold: threshold },
         { id: "role2loc2company", threshold: threshold }
-      ]
-    );
-  }
-
-  async calculateWeeklyReport() {
-    const s = moment().startOf('isoWeek');
-    const e = moment().endOf('isoWeek');
-    //const s = moment('2020-03-02', 'YYYY-MM-DD');
-    //const e = moment('2020-03-08', 'YYYY-MM-DD');
-    const threshold = 3;
-    await this.calculate( s, e, e.format('YYYY-MM-DD'),
-      [
+        /*
         { id: "count2location", threshold: threshold },
         { id: "count2citycompany", threshold: threshold },
         { id: "specBycompany", threshold: threshold },
@@ -85,14 +74,14 @@ class reportManager extends baseRule {
         { id: "seniorityBylocation", threshold: threshold },
         { id: "roleBycompany", threshold: threshold },
         { id: "roleBylocation", threshold: threshold }
+        */
       ]
     );
   }
 
   async calculateMonthlyReport() {
-    const m = moment("2020-02-15");
-    const s = moment(m).startOf('month');
-    const e = moment(m).endOf('month');
+    const s = moment().startOf('month');
+    const e = moment().endOf('month');
     const threshold = 8;
     await this.calculate(s, e, e.format('YYYY MMMM'),
       [
