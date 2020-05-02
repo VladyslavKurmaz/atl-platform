@@ -5,8 +5,8 @@ const config = {
   scrapers: {
     actor01: {
       scheduling: {
-        hour: 12, //[0, 12],
-        minute: 0 //0
+        hour: 13, //[0, 12],
+        minute: 20 //0
       },
       config: {
         requestTimeout: {
@@ -19,7 +19,7 @@ const config = {
   reports: {
     weekly: {
       scheduling: {
-        hour: 23,
+        hour: 20,
         minute: 0,
         dayOfWeek: 0
       }
@@ -48,20 +48,23 @@ const context = require('./context').create({
 
 // create persistent storage and main service
 const drivers = require('./drivers');
-context.add({db: drivers.createDb(context.clone('logger'))});
+context.add({ db: drivers.createDb(context.clone('logger')) });
 const service = drivers.createService(context.clone('logger', 'utils', 'db', 'adapters', 'rules', 'entities'), process.env.COMPONENT_ID);
+const server = drivers.createServer(context.clone('logger', 'utils', 'db', 'adapters', 'rules', 'entities'));
 
 // take care about grateful exit
 ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach(sig => {
   process.on(sig, () => {
     service.shutdown().
-    then(() => process.exit(0)).
-    catch(e => { console.error(e); process.exit(1); })
+      then(() => process.exit(0)).
+      catch(e => { console.error(e); process.exit(1); })
   });
 });
 
-// run scan cycle
 (async () => {
+  // run http server
+  await server.server(process.env.COMPONENT_PARAM_PORT);
+  // run scans
   try {
     let connected = false;
     while (!connected) {
@@ -84,4 +87,3 @@ const service = drivers.createService(context.clone('logger', 'utils', 'db', 'ad
     context.logger.error(e);
   }
 })();
-

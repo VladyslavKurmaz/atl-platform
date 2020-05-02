@@ -52,7 +52,7 @@ db.getCollection("docs.vacancies").aggregate([{$group: { _id: '$companyKey', tag
 class reportManager extends baseRule {
   constructor(context) {
     super(context);
-    this.cache = [];
+    // TOREMOVE this.cache = [];
   }
 
   async calculateWeeklyReport() {
