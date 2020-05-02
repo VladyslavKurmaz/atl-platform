@@ -1,12 +1,13 @@
 'use strict';
+const moment = require('moment');
 
 // read config
 const config = {
   scrapers: {
     actor01: {
       scheduling: {
-        hour: 13, //[0, 12],
-        minute: 20 //0
+        hour: 12, //[0, 12],
+        minute: 0 //0
       },
       config: {
         requestTimeout: {
@@ -36,6 +37,7 @@ const config = {
 
 // load environment variable from .env file
 const dotenv = require('dotenv').config();
+
 
 // Create main context
 const context = require('./context').create({

@@ -59,7 +59,7 @@ class reportManager extends baseRule {
     const s = moment().startOf('isoWeek');
     const e = moment().endOf('isoWeek');
     const threshold = 3;
-    await this.calculate( s, e, e.format('YYYY-MM-DD'),
+    return await this.calculate( s, e, e.format('YYYY-MM-DD'), e.format('YYYY-MM-DD'),
       [
         { id: "count2location", threshold: threshold },
         { id: "spec2loc2company", threshold: threshold },
@@ -80,10 +80,10 @@ class reportManager extends baseRule {
   }
 
   async calculateMonthlyReport() {
-    const s = moment().startOf('month');
-    const e = moment().endOf('month');
+    const s = moment().subtract(1, 'months').startOf('month');
+    const e = moment().subtract(1, 'months').endOf('month');
     const threshold = 8;
-    await this.calculate(s, e, e.format('YYYY MMMM'),
+    return await this.calculate(s, e, e.format('YYYY MMMM'), e.format('YYYY-MM'),
       [
         { id: "count2location", threshold: threshold },
         { id: "count2company", threshold: threshold },
@@ -105,7 +105,7 @@ class reportManager extends baseRule {
   roleBycompany
   roleBylocation
   */
-  async calculate(startDate, endDate, title, reports) {
+  async calculate(startDate, endDate, title, suffix, reports) {
     const start = startDate;
     const end = endDate;
     // Calculate report
@@ -411,8 +411,9 @@ class reportManager extends baseRule {
 
     }
     //
-    fs.writeFileSync('report.json', JSON.stringify(report), 'utf8');
-    this.context.logger.info('Calculating report is done');
+    fs.writeFileSync(`report-${suffix}.json`, JSON.stringify(report), 'utf8');
+    this.context.logger.info(`Calculating report is done - ${suffix}`);
+    return report;
   }
 
   async getSankeyReport(query, from, to, threshold, defValueTo, defValueFrom = null, header = true) {

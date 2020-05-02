@@ -34,16 +34,19 @@ class service extends baseItem {
       );
     }
     // run report engine
-    const reports = this.context.rules.createReportManager(cntx.duplicate());
-    //await report.calculateMonthlyReport();
-    //await report.calculateWeeklyReport();
+    const reportsManager = this.context.rules.createReportManager(cntx.duplicate());
+    const reports = [
+      {scheduling: config.reports.weekly.scheduling, caclulate: async () => await reportsManager.calculateWeeklyReport()},
+      {scheduling: config.reports.monthly.scheduling, caclulate: async () => await reportsManager.calculateMonthlyReport()}
+    ];
     //
-    this.jobs.push(
-      schedule.scheduleJob(config.reports.weekly.scheduling, async () => {
-        await reports.calculateWeeklyReport();
-      })
-    );
-    //
+    for (const report of reports) {
+      this.jobs.push(
+        schedule.scheduleJob(report.scheduling, async () => {
+          await report.caclulate();
+        })
+      );
+    }
   }
 
   async shutdown() {

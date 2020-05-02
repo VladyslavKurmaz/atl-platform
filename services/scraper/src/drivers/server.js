@@ -15,11 +15,17 @@ class server extends baseItem {
 
   async server(port) {
     const conext = this.context.clone('logger', 'utils', 'db', 'rules', 'entities');
-    const reports = this.context.rules.createReportManager(cntx.duplicate());
+    const reports = this.context.rules.createReportManager(conext.duplicate());
 
-    this.app.post('/goals/reports', (req, res) => {
-      res.json({success:true, data:[]});
+    this.app.get('/goals/reports/weekly', async (req, res) => {
+      const data = await reports.calculateWeeklyReport();
+      res.json({success:true, data});
     });
+    this.app.get('/goals/reports/monthly', async (req, res) => {
+      const data = await reports.calculateMonthlyReport();
+      res.json({success:true, data});
+    });
+    
     this.app.listen(port, () => {
       this.context.logger.info(`Listening on port ${port}`);
     });
