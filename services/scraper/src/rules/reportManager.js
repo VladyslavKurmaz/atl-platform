@@ -56,9 +56,9 @@ class reportManager extends baseRule {
   }
 
   async calculateWeeklyReport() {
-    const s = moment().startOf('isoWeek');
-    const e = moment().endOf('isoWeek');
-    const threshold = 3;
+    const s = moment().subtract(1, 'days').startOf('isoWeek');
+    const e = moment().subtract(1, 'days').endOf('isoWeek');
+    const threshold = 7;
     return await this.calculate( s, e, e.format('YYYY-MM-DD'), e.format('YYYY-MM-DD'),
       [
         { id: "count2location", threshold: threshold },
@@ -363,7 +363,7 @@ class reportManager extends baseRule {
         const q1 = queries.spec2loc2company1;
         const q2 = queries.spec2loc2company2;
         let data = await this.getSankeyReport([match].concat(q1.data), q1.first, q1.second, 1/*r.threshold*/, q1.other);
-        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 3/*r.threshold*/, q2.other, null, false));
+        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, r.threshold, q2.other, null, false));
         report.graphs.push({
           type: 'sankey',
           title: 'Specialization > Location > Company',
@@ -390,7 +390,7 @@ class reportManager extends baseRule {
         const q1 = queries.seniority2loc2company1;
         const q2 = queries.seniority2loc2company2;
         let data = await this.getSankeyReport([match].concat(q1.data), q1.first, q1.second, 1/*r.threshold*/, q1.other);
-        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 3/*r.threshold*/, q2.other, null, false));
+        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 8/*r.threshold*/, q2.other, null, false));
         report.graphs.push({
           type: 'sankey',
           title: 'Seniority > Location > Company',
@@ -401,7 +401,7 @@ class reportManager extends baseRule {
         const q1 = queries.role2loc2company1;
         const q2 = queries.role2loc2company2;
         let data = await this.getSankeyReport([match].concat(q1.data), q1.first, q1.second, 1/*r.threshold*/, q1.other);
-        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 3/*r.threshold*/, q2.other, null, false));
+        data = data.concat(await this.getSankeyReport([match].concat(q2.data), q2.first, q2.second, 8/*r.threshold*/, q2.other, null, false));
         report.graphs.push({
           type: 'sankey',
           title: 'Role > Location > Company',

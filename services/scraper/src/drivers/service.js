@@ -24,6 +24,7 @@ class service extends baseItem {
       this.context.adapters.createScraper02(cntx.duplicate(), config.scrapers.actor01.config),
       this.context.adapters.createScraper03(cntx.duplicate(), config.scrapers.actor01.config)*/
     ]
+    // await scrapers[0].execute();
     for (const scraper of scrapers) {
       this.jobs.push(
         schedule.scheduleJob(config.scrapers.actor01.scheduling, async () => {
@@ -35,6 +36,7 @@ class service extends baseItem {
     }
     // run report engine
     const reportsManager = this.context.rules.createReportManager(cntx.duplicate());
+    //reportsManager.calculateWeeklyReport();
     const reports = [
       {scheduling: config.reports.weekly.scheduling, caclulate: async () => await reportsManager.calculateWeeklyReport()},
       {scheduling: config.reports.monthly.scheduling, caclulate: async () => await reportsManager.calculateMonthlyReport()}

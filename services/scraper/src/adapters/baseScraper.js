@@ -1,5 +1,6 @@
 'use strict';
 
+const puppeteer = require('puppeteer');
 const request = require('request');
 const shuffle = require('fisher-yates');
 const delay = require('delay');
@@ -35,55 +36,77 @@ class baseScraper extends baseItem {
     });
   }
 
-  async execute() {
+  async getPageContent(page, url, pageTimeout = 10000, clickTimeput = 1000) {
+    await page.goto(url);
+    try {
+      const elementHandle = await page.waitForSelector('.more-btn > a', { visible: true, timeout: pageTimeout });
+      let style = '';
+      while( style !== 'none' ) {
+        await elementHandle.click();
+        await page.waitFor(clickTimeput);
+        style = await elementHandle.evaluate(node => node.style['display']);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    return await page.content();
+  }
+
+  async execute(headless = true) {
+    //
     let i = 0;
     const kws = shuffle(keywords/*.slice(0, 1)*/);
     const kwsCount = kws.length;
     const startTime = moment();
     for (const kw of kws) {
       i++;
-      await this.doRequest(this.getSearchUrl(kw)).
-        then(async (data) => {
-          // get search results
-          let $ = cheerio.load(data);
-          let items = this.parseSearch($);
-          // scan vacancies
-          let j = 0;
-          const count = items.length;
-          for (const e of items) {
-            const tm = utils.getTimeout(this.config.requestTimeout);
-            this.context.logger.info(`${this.name} will sleep for ${tm} before next request`);
-            await delay(tm);
-            //
-            j++;
-            this.context.logger.info(`${this.name} [${kw} ${i}/${kwsCount}] [${j}/${count}, ${e}`);
-            let vacancy = null;
-            let companyUrl = null;
-            let company = null;
-            await this.doRequest(e).then((data) => {
-              $ = cheerio.load(data);
-              ({ companyUrl, vacancy } = this.parseVacancy($, e));
-            }).catch(e => {
-              this.context.logger.error(this.name, e);
-            });
-            if (companyUrl) {
-              // parse company
-              await this.doRequest(companyUrl).then((data) => {
-                $ = cheerio.load(data);
-                company = this.parseCompany($, companyUrl);
-              }).catch(e => {
-                this.context.logger.error(this.name, e);
-              });
-            }
-            let issues = [];
-            if (vacancy && company) {
-              issues = await this.vacancyManager.add(company, vacancy);
-            }
-            this.issues.push(...issues);
-          }
+      const url = this.getSearchUrl(kw);
+      //      await this.doRequest(url).
+      //        then(async (data) => {
+      const browser = await puppeteer.launch({ headless, defaultViewport: null, args: ['--start-maximized'] });
+      const [page] = await browser.pages();
+      const data = await this.getPageContent(page, url);
+      await browser.close();
+      // get search results
+      let $ = cheerio.load(data);
+      let items = this.parseSearch($);
+      // scan vacancies
+      let j = 0;
+      const count = items.length;
+      for (const e of items) {
+        const tm = utils.getTimeout(this.config.requestTimeout);
+        this.context.logger.info(`${this.name} will sleep for ${tm} before next request`);
+        await delay(tm);
+        //
+        j++;
+        this.context.logger.info(`${this.name} [${kw} ${i}/${kwsCount}] [${j}/${count}, ${e}`);
+        let vacancy = null;
+        let companyUrl = null;
+        let company = null;
+        await this.doRequest(e).then((data) => {
+          $ = cheerio.load(data);
+          ({ companyUrl, vacancy } = this.parseVacancy($, e));
         }).catch(e => {
           this.context.logger.error(this.name, e);
         });
+        if (companyUrl) {
+          // parse company
+          await this.doRequest(companyUrl).then((data) => {
+            $ = cheerio.load(data);
+            company = this.parseCompany($, companyUrl);
+          }).catch(e => {
+            this.context.logger.error(this.name, e);
+          });
+        }
+        let issues = [];
+        if (vacancy && company) {
+          issues = await this.vacancyManager.add(company, vacancy);
+        }
+        this.issues.push(...issues);
+      }
+      //        }).catch(e => {
+      //          this.context.logger.error(this.name, e);
+      //        });
     }
     // save issues
     await this.context.db.saveIssues(this.issues);

@@ -6,12 +6,12 @@ const config = {
   scrapers: {
     actor01: {
       scheduling: {
-        hour: 12, //[0, 12],
-        minute: 0 //0
+        hour: 8, //[0, 12],
+        minute: 1 //0
       },
       config: {
         requestTimeout: {
-          middle: 5 * 1000,
+          middle: 1000,
           deviation: 10
         }
       }
@@ -20,8 +20,8 @@ const config = {
   reports: {
     weekly: {
       scheduling: {
-        hour: 20,
-        minute: 0,
+        hour: 23,
+        minute: 5,
         dayOfWeek: 0
       }
     },
@@ -38,7 +38,7 @@ const config = {
 // load environment variable from .env file
 const dotenv = require('dotenv').config();
 
-
+  
 // Create main context
 const context = require('./context').create({
   logger: require('./logger').create(3),
